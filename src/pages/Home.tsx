@@ -1,7 +1,9 @@
-import React from 'react';
-import CameraRoll from '../components/CameraRoll';
+import React from "react";
+import CameraRoll from "../components/CameraRoll";
+import { useEffect } from "react";
 
 const Home: React.FC = () => {
+  useEffect(() => console.log("Home page mounted"), []);
   return (
     <div className="flex flex-col items-center">
       <h1 className="text-2xl font-bold my-4">Active Rolls</h1>
