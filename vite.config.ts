@@ -6,6 +6,6 @@ import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 
 export default defineConfig({
-  base: "/FilmExif/",
+  base: "/FilmEXIF/",
   plugins: [react()],
 });
