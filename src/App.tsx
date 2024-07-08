@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 
 const App: React.FC = () => {
   return (
-    <Router basename={process.env.NODE_ENV === "production" ? "/FilmEXIF" : ""}>
+    <Router basename="/FilmEXIF">
       <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
