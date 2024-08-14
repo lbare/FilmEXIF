@@ -13,7 +13,7 @@ const App: React.FC = () => {
   useEffect(() => console.log("App mounted"), []);
 
   return (
-    <MantineProvider>
+    <MantineProvider defaultColorScheme="dark">
       <Router basename="/FilmEXIF">
         <Routes>
           <Route path="/" element={<Navigate to="/tabs/home" replace />} />
