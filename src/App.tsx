@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
+import { RollsProvider } from "./contexts/RollsContext";
 import TabNavigator from "./navigation/TabNavigator";
 import "@mantine/core/styles.css";
 
@@ -14,12 +15,14 @@ const App: React.FC = () => {
 
   return (
     <MantineProvider defaultColorScheme="dark">
-      <Router basename="/FilmEXIF">
-        <Routes>
-          <Route path="/" element={<Navigate to="/tabs/home" replace />} />
-          <Route path="/tabs/:tabValue" element={<TabNavigator />} />
-        </Routes>
-      </Router>
+      <RollsProvider>
+        <Router basename="/FilmEXIF">
+          <Routes>
+            <Route path="/" element={<Navigate to="/tabs/home" replace />} />
+            <Route path="/tabs/:tabValue" element={<TabNavigator />} />
+          </Routes>
+        </Router>
+      </RollsProvider>
     </MantineProvider>
   );
 };
