@@ -11,28 +11,24 @@ const TabNavigator = () => {
   const { tabValue } = useParams();
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <Tabs
         value={tabValue || "home"}
         onChange={(value) => navigate(`/tabs/${value}`)}
-        style={{ flex: 1, display: "flex", flexDirection: "column" }}
+        style={{ flex: 1 }}
       >
-        <div style={{ flex: 1, overflowY: "auto" }}>
-          <Tabs.Panel value="home">
-            <Home />
-          </Tabs.Panel>
-          <Tabs.Panel value="add">
-            <AddRoll />
-          </Tabs.Panel>
-          <Tabs.Panel value="library">
-            <Library />
-          </Tabs.Panel>
-          <Tabs.Panel value="settings">
-            <Settings />
-          </Tabs.Panel>
-        </div>
+        <Tabs.Panel value="home">
+          <Home />
+        </Tabs.Panel>
+        <Tabs.Panel value="add">
+          <AddRoll />
+        </Tabs.Panel>
+        <Tabs.Panel value="library">
+          <Library />
+        </Tabs.Panel>
+        <Tabs.Panel value="settings">
+          <Settings />
+        </Tabs.Panel>
 
         <Tabs.List
           style={{ position: "sticky", bottom: 0, backgroundColor: "white" }}
