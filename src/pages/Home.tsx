@@ -1,65 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { Tabs } from "@mantine/core";
-import { House, Plus, CameraPlus, Gear } from "@phosphor-icons/react";
-import Home from "../pages/Home";
-import AddRoll from "../pages/AddRoll";
-import Library from "../pages/Library";
-import Settings from "../pages/Settings";
+import React, { useEffect } from "react";
 
-const TabNavigator = () => {
-  const navigate = useNavigate();
-  const { tabValue } = useParams();
+const Home: React.FC = () => {
+  useEffect(() => console.log("Home mounted"), []);
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-    >
-      <Tabs
-        value={tabValue || "home"}
-        onChange={(value) => navigate(`/tabs/${value}`)}
-        style={{ flex: 1, display: "flex", flexDirection: "column" }}
-      >
-        <div style={{ flex: 1, overflowY: "auto" }}>
-          <Tabs.Panel value="home">
-            <Home />
-          </Tabs.Panel>
-          <Tabs.Panel value="add">
-            <AddRoll />
-          </Tabs.Panel>
-          <Tabs.Panel value="library">
-            <Library />
-          </Tabs.Panel>
-          <Tabs.Panel value="settings">
-            <Settings />
-          </Tabs.Panel>
-        </div>
-
-        <Tabs.List
-          style={{ position: "sticky", bottom: 0, backgroundColor: "white" }}
-          justify="space-between"
-        >
-          <Tabs.Tab
-            leftSection={<House size={32} weight="regular" color="#000000" />}
-            value="home"
-          />
-          <Tabs.Tab
-            leftSection={<Plus size={32} weight="regular" color="#000000" />}
-            value="add"
-          />
-          <Tabs.Tab
-            leftSection={
-              <CameraPlus size={32} weight="regular" color="#000000" />
-            }
-            value="library"
-          />
-          <Tabs.Tab
-            leftSection={<Gear size={32} weight="regular" color="#000000" />}
-            value="settings"
-          />
-        </Tabs.List>
-      </Tabs>
+    <div className="flex w-screen flex-col items-center">
+      <h1 className="text-2xl font-bold my-4">Rolls</h1>
     </div>
   );
 };
 
-export default TabNavigator;
+export default Home;
