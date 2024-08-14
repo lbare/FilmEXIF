@@ -1,7 +1,8 @@
 export interface FilmRoll {
+  name?: string;
   camera: string;
-  brand: string;
-  name: string;
+  filmBrand: string;
+  filmName: string;
   iso: number;
   exposures: number;
   photos: Photo[];

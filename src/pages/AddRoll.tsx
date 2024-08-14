@@ -1,29 +1,63 @@
 import { Button, TextInput, Box, Select } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { FilmRoll } from "../interfaces";
+import { useNavigate } from "react-router-dom";
+import { useRolls } from "../contexts/useRolls";
 
 const AddRoll = () => {
   const form = useForm<FilmRoll>({
     initialValues: {
-      camera: "",
-      brand: "",
       name: "",
+      camera: "",
+      filmBrand: "",
+      filmName: "",
       iso: 400,
       exposures: 36,
       photos: [],
     },
   });
 
+  const navigate = useNavigate();
+  const { addRoll } = useRolls();
+
   const handleSubmit = (values: FilmRoll) => {
-    console.log("Form Submitted with values:", values);
+    addRoll(values);
+    navigate("/tabs/library");
   };
 
   return (
-    <Box className="m-2 max-w-lg mx-auto px-4">
-      <form onSubmit={form.onSubmit(handleSubmit)} className="space-y-4">
-        <TextInput label="Camera" {...form.getInputProps("camera")} />
-        <TextInput label="Film Brand" {...form.getInputProps("brand")} />
-        <TextInput label="Film Name" {...form.getInputProps("name")} />
+    <Box className="flex flex-col w-full my-4 items-center justify-center">
+      <h2 className="text-2xl font-bold mb-4">Add New Roll</h2>
+      <form
+        onSubmit={form.onSubmit(handleSubmit)}
+        className="space-y-4 w-11/12 md:w-1/3"
+      >
+        <TextInput
+          label="Name"
+          placeholder="Optional"
+          {...form.getInputProps("name")}
+        />
+        <TextInput
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
+          label="Camera"
+          {...form.getInputProps("camera")}
+        />
+        <TextInput
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
+          label="Film Brand"
+          {...form.getInputProps("filmBrand")}
+        />
+        <TextInput
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
+          label="Film Name"
+          {...form.getInputProps("filmName")}
+        />
         <Select
           label="ISO Rating"
           placeholder="Select ISO"
@@ -36,6 +70,7 @@ const AddRoll = () => {
             { value: "1600", label: "1600" },
           ]}
           {...form.getInputProps("iso")}
+          value={form.values.iso.toString()}
         />
 
         <Button type="submit">Submit</Button>
