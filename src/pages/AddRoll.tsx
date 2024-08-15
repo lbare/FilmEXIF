@@ -20,6 +20,7 @@ const AddRoll = () => {
       iso: 400,
       exposures: 36,
       photos: [],
+      lastUpdated: "",
     },
     validate: {
       name: (value) => (value ? null : "Name is required"),

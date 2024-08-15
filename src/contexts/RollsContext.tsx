@@ -5,6 +5,8 @@ import {
   addRollToFirebase,
   moveRoll,
   addPhotoToRollInFirebase,
+  updateGlobalTimestamp,
+  getGlobalLastUpdatedTimestamp,
 } from "../firebase/config";
 
 export interface RollsContextType {
@@ -36,23 +38,36 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const loadRolls = async () => {
       setIsLoading(true);
-      try {
-        const cachedRolls = localStorage.getItem("filmRolls");
-        let rollsData;
 
-        if (cachedRolls) {
-          rollsData = JSON.parse(cachedRolls);
-          console.log("Loaded rolls from cache", rollsData);
-        } else {
+      try {
+        const localLastUpdated = localStorage.getItem("lastUpdated");
+        const cachedRolls = localStorage.getItem("filmRolls");
+        const globalLastUpdated = await getGlobalLastUpdatedTimestamp();
+
+        let rollsData;
+        const isCacheOutOfDate =
+          !cachedRolls ||
+          !localLastUpdated ||
+          (globalLastUpdated && globalLastUpdated > localLastUpdated);
+
+        if (isCacheOutOfDate) {
           rollsData = await getAllRolls();
           localStorage.setItem("filmRolls", JSON.stringify(rollsData));
-          localStorage.setItem("lastUpdated", new Date().toISOString());
+          localStorage.setItem(
+            "lastUpdated",
+            globalLastUpdated || new Date().toISOString()
+          );
           console.log("Loaded rolls from Firebase and cached");
+          setActiveRolls(rollsData.activeRolls || []);
+          setDevelopedRolls(rollsData.developedRolls || []);
+          setCompletedRolls(rollsData.completedRolls || []);
+        } else {
+          rollsData = JSON.parse(cachedRolls);
+          console.log("Loaded rolls from cache", rollsData);
+          setActiveRolls(rollsData.activeRolls || []);
+          setDevelopedRolls(rollsData.developedRolls || []);
+          setCompletedRolls(rollsData.completedRolls || []);
         }
-
-        setActiveRolls(rollsData.activeRolls || []);
-        setDevelopedRolls(rollsData.developedRolls || []);
-        setCompletedRolls(rollsData.completedRolls || []);
       } catch (error) {
         console.error("Failed to load rolls:", error);
       } finally {
@@ -68,6 +83,7 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
 
     try {
       await addRollToFirebase(roll);
+
       setActiveRolls((prev) => [...prev, roll]);
       localStorage.setItem(
         "filmRolls",
@@ -77,6 +93,7 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
           completedRolls,
         })
       );
+      await updateGlobalTimestamp();
     } catch (error) {
       console.error("Failed to add roll:", error);
     } finally {
@@ -103,12 +120,15 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
           completedRolls,
         })
       );
+
+      await updateGlobalTimestamp();
     } catch (error) {
       console.error("Failed to add photo to roll:", error);
     } finally {
       setLoadingRolls((prev) => ({ ...prev, [id]: false }));
     }
   };
+
   const moveRollToStage = async (
     rollId: string,
     currentStage: string,
@@ -123,6 +143,7 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
       setCompletedRolls(updatedRolls.completedRolls);
 
       localStorage.setItem("filmRolls", JSON.stringify(updatedRolls));
+      await updateGlobalTimestamp();
     } catch (error) {
       console.error("Failed to move roll:", error);
     }

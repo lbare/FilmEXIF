@@ -8,6 +8,7 @@ export interface FilmRoll {
   exposures: number;
   photos: Photo[];
   isLoading?: boolean;
+  lastUpdated: string;
 }
 
 export interface Photo {

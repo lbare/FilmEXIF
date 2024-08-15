@@ -11,6 +11,8 @@ import {
   addDoc,
   deleteDoc,
   updateDoc,
+  setDoc,
+  getDoc,
   doc,
 } from "firebase/firestore";
 import { FilmRoll, Photo } from "../interfaces.tsx";
@@ -28,6 +30,33 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
+const globalTimestampDocRef = doc(db, "metadata", "globalLastUpdated");
+
+export const updateGlobalTimestamp = async (): Promise<void> => {
+  try {
+    const timestamp = new Date().toISOString();
+    await setDoc(globalTimestampDocRef, { lastUpdated: timestamp });
+    localStorage.setItem("lastUpdated", timestamp);
+  } catch (error) {
+    console.error("Error updating global timestamp:", error);
+  }
+};
+
+export const getGlobalLastUpdatedTimestamp = async (): Promise<
+  string | null
+> => {
+  try {
+    const docSnapshot = await getDoc(globalTimestampDocRef);
+    if (docSnapshot.exists()) {
+      return docSnapshot.data().lastUpdated || null;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching global timestamp:", error);
+    return null;
+  }
+};
+
 const getRollsByCollection = async (
   collectionName: string,
   newOnly = false
@@ -41,8 +70,8 @@ const getRollsByCollection = async (
       const lastDate = new Date(lastDateStr);
       q = query(
         rollsCollection,
-        where("date", "<=", lastDate),
-        orderBy("date")
+        where("lastUpdated", ">", lastDate),
+        orderBy("lastUpdated")
       );
     } else {
       q = query(rollsCollection);
@@ -93,7 +122,6 @@ export const addRollToFirebase = async (roll: FilmRoll) => {
     const timestamp = new Date().toISOString();
     const docRef = await addDoc(rollsCollection, { ...roll, timestamp });
     console.log("Roll added with ID: ", docRef.id);
-    localStorage.setItem("lastUpdated", timestamp);
   } catch (error) {
     console.error("Error adding roll:", error);
     throw new Error("Failed to add roll");
@@ -118,15 +146,31 @@ export const addPhotoToRollInFirebase = async (
 
     const updatedPhotos = [...rollData.photos, newPhoto];
 
+    const newTimestamp = new Date().toISOString();
+
     await updateDoc(doc(db, "activeRolls", rollDoc.id), {
       photos: updatedPhotos,
-      lastUpdated: new Date().toISOString(), // Optionally update lastUpdated timestamp
+      lastUpdated: newTimestamp,
     });
 
     console.log(`Photo added to roll with ID: ${rollId}`);
   } catch (error) {
     console.error("Error adding photo to roll:", error);
     throw new Error("Failed to add photo to roll");
+  }
+};
+
+export const deleteRollFromFirebase = async (
+  rollId: string,
+  stage: string
+): Promise<void> => {
+  try {
+    const rollDocRef = doc(db, `${stage}Rolls`, rollId);
+    await deleteDoc(rollDocRef);
+    console.log("Roll deleted and global timestamp updated.");
+  } catch (error) {
+    console.error("Error deleting roll:", error);
+    throw new Error("Failed to delete roll");
   }
 };
 
