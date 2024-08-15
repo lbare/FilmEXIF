@@ -3,10 +3,12 @@ import { useForm } from "@mantine/form";
 import { FilmRoll } from "../interfaces";
 import { useNavigate } from "react-router-dom";
 import { useRolls } from "../contexts/useRolls";
+import { v4 as uuidv4 } from "uuid";
 
 const AddRoll = () => {
   const form = useForm<FilmRoll>({
     initialValues: {
+      id: "",
       name: "",
       camera: "",
       filmBrand: "",
@@ -21,7 +23,9 @@ const AddRoll = () => {
   const { addRoll } = useRolls();
 
   const handleSubmit = (values: FilmRoll) => {
+    values.id = uuidv4();
     addRoll(values);
+    form.reset();
     navigate("/tabs/library");
   };
 
