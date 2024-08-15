@@ -18,7 +18,7 @@ const App: React.FC = () => {
       <RollsProvider>
         <Router basename="/FilmEXIF">
           <Routes>
-            <Route path="/" element={<Navigate to="/tabs/home" replace />} />
+            <Route path="/" element={<Navigate to="/tabs/library" replace />} />
             <Route path="/tabs/:tabValue" element={<TabNavigator />} />
           </Routes>
         </Router>
