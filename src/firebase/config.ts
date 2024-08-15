@@ -10,9 +10,10 @@ import {
   Query,
   addDoc,
   deleteDoc,
+  updateDoc,
   doc,
 } from "firebase/firestore";
-import { FilmRoll } from "../interfaces.tsx";
+import { FilmRoll, Photo } from "../interfaces.tsx";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAOY73LntFR-3h3DxlXwnP7diUUfnWt85k",
@@ -96,6 +97,36 @@ export const addRollToFirebase = async (roll: FilmRoll) => {
   } catch (error) {
     console.error("Error adding roll:", error);
     throw new Error("Failed to add roll");
+  }
+};
+
+export const addPhotoToRollInFirebase = async (
+  rollId: string,
+  newPhoto: Photo
+) => {
+  try {
+    const rollsCollection = collection(db, "activeRolls");
+    const q = query(rollsCollection, where("id", "==", rollId));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      throw new Error("Roll not found in the collection.");
+    }
+
+    const rollDoc = querySnapshot.docs[0];
+    const rollData = rollDoc.data() as FilmRoll;
+
+    const updatedPhotos = [...rollData.photos, newPhoto];
+
+    await updateDoc(doc(db, "activeRolls", rollDoc.id), {
+      photos: updatedPhotos,
+      lastUpdated: new Date().toISOString(), // Optionally update lastUpdated timestamp
+    });
+
+    console.log(`Photo added to roll with ID: ${rollId}`);
+  } catch (error) {
+    console.error("Error adding photo to roll:", error);
+    throw new Error("Failed to add photo to roll");
   }
 };
 

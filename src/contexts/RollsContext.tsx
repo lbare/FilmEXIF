@@ -1,6 +1,11 @@
 import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { FilmRoll, Photo } from "../interfaces";
-import { getAllRolls, addRollToFirebase, moveRoll } from "../firebase/config";
+import {
+  getAllRolls,
+  addRollToFirebase,
+  moveRoll,
+  addPhotoToRollInFirebase,
+} from "../firebase/config";
 
 export interface RollsContextType {
   activeRolls: FilmRoll[];
@@ -28,32 +33,26 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
     {}
   );
 
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-
   useEffect(() => {
     const loadRolls = async () => {
       setIsLoading(true);
-
       try {
-        if (!isInitialized) {
-          const cachedRolls = localStorage.getItem("filmRolls");
-          let rollsData;
+        const cachedRolls = localStorage.getItem("filmRolls");
+        let rollsData;
 
-          if (cachedRolls) {
-            rollsData = JSON.parse(cachedRolls);
-            console.log("Loaded rolls from cache", rollsData);
-          } else {
-            rollsData = await getAllRolls();
-            localStorage.setItem("filmRolls", JSON.stringify(rollsData));
-            localStorage.setItem("lastUpdated", new Date().toISOString());
-            console.log("Loaded rolls from Firebase and cached");
-          }
-
-          setActiveRolls(rollsData.activeRolls || []);
-          setDevelopedRolls(rollsData.developedRolls || []);
-          setCompletedRolls(rollsData.completedRolls || []);
-          setIsInitialized(true);
+        if (cachedRolls) {
+          rollsData = JSON.parse(cachedRolls);
+          console.log("Loaded rolls from cache", rollsData);
+        } else {
+          rollsData = await getAllRolls();
+          localStorage.setItem("filmRolls", JSON.stringify(rollsData));
+          localStorage.setItem("lastUpdated", new Date().toISOString());
+          console.log("Loaded rolls from Firebase and cached");
         }
+
+        setActiveRolls(rollsData.activeRolls || []);
+        setDevelopedRolls(rollsData.developedRolls || []);
+        setCompletedRolls(rollsData.completedRolls || []);
       } catch (error) {
         console.error("Failed to load rolls:", error);
       } finally {
@@ -62,7 +61,7 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     loadRolls();
-  }, [isInitialized]);
+  }, []);
 
   const addRoll = async (roll: FilmRoll) => {
     setLoadingRolls((prev) => ({ ...prev, [roll.id]: true }));
@@ -85,22 +84,31 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const addPhotoToRoll = (id: string, newPhoto: Photo) => {
-    const updatedActiveRolls = activeRolls.map((roll) =>
-      roll.id === id ? { ...roll, photos: [...roll.photos, newPhoto] } : roll
-    );
+  const addPhotoToRoll = async (id: string, newPhoto: Photo) => {
+    setLoadingRolls((prev) => ({ ...prev, [id]: true }));
 
-    setActiveRolls(updatedActiveRolls);
-    localStorage.setItem(
-      "filmRolls",
-      JSON.stringify({
-        activeRolls: updatedActiveRolls,
-        developedRolls,
-        completedRolls,
-      })
-    );
+    try {
+      await addPhotoToRollInFirebase(id, newPhoto);
+
+      const updatedActiveRolls = activeRolls.map((roll) =>
+        roll.id === id ? { ...roll, photos: [...roll.photos, newPhoto] } : roll
+      );
+
+      setActiveRolls(updatedActiveRolls);
+      localStorage.setItem(
+        "filmRolls",
+        JSON.stringify({
+          activeRolls: updatedActiveRolls,
+          developedRolls,
+          completedRolls,
+        })
+      );
+    } catch (error) {
+      console.error("Failed to add photo to roll:", error);
+    } finally {
+      setLoadingRolls((prev) => ({ ...prev, [id]: false }));
+    }
   };
-
   const moveRollToStage = async (
     rollId: string,
     currentStage: string,
