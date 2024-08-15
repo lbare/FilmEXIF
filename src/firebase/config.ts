@@ -12,7 +12,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import { FilmRoll } from "../src/interfaces.tsx";
+import { FilmRoll } from "../interfaces.tsx";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAOY73LntFR-3h3DxlXwnP7diUUfnWt85k",
@@ -60,38 +60,15 @@ const getRollsByCollection = async (
   }
 };
 
-const getActiveRolls = async (newOnly = false) => {
+export const getAllRolls = async (): Promise<{
+  activeRolls: FilmRoll[];
+  developedRolls: FilmRoll[];
+  completedRolls: FilmRoll[];
+}> => {
   try {
-    return await getRollsByCollection("activeRolls", newOnly);
-  } catch (error) {
-    console.error("Error getting active rolls:", error);
-    throw new Error("Failed to get active rolls");
-  }
-};
-
-const getDevelopedRolls = async (newOnly = false) => {
-  try {
-    return await getRollsByCollection("developedRolls", newOnly);
-  } catch (error) {
-    console.error("Error getting developed rolls:", error);
-    throw new Error("Failed to get developed rolls");
-  }
-};
-
-const getCompletedRolls = async (newOnly = false) => {
-  try {
-    return await getRollsByCollection("completedRolls", newOnly);
-  } catch (error) {
-    console.error("Error getting completed rolls:", error);
-    throw new Error("Failed to get completed rolls");
-  }
-};
-
-export const getAllRolls = async () => {
-  try {
-    const activeRolls = await getActiveRolls();
-    const developedRolls = await getDevelopedRolls();
-    const completedRolls = await getCompletedRolls();
+    const activeRolls = await getRollsByCollection("activeRolls");
+    const developedRolls = await getRollsByCollection("developedRolls");
+    const completedRolls = await getRollsByCollection("completedRolls");
 
     return { activeRolls, developedRolls, completedRolls };
   } catch (error) {
@@ -100,11 +77,10 @@ export const getAllRolls = async () => {
   }
 };
 
-export const addRoll = async (roll: FilmRoll) => {
+export const addRollToFirebase = async (roll: FilmRoll): Promise<void> => {
   try {
     const rollsCollection = collection(db, "activeRolls");
     const docRef = await addDoc(rollsCollection, roll);
-
     console.log("Roll added with ID: ", docRef.id);
   } catch (error) {
     console.error("Error adding roll:", error);
