@@ -7,7 +7,6 @@ export interface FilmRoll {
   iso: number;
   exposures: number;
   photos: Photo[];
-  stage: "active" | "developed" | "scanned" | "archived";
 }
 
 export interface Photo {

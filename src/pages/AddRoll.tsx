@@ -16,7 +16,6 @@ const AddRoll = () => {
       iso: 400,
       exposures: 36,
       photos: [],
-      stage: "active",
     },
   });
 
@@ -25,7 +24,7 @@ const AddRoll = () => {
 
   const handleSubmit = (values: FilmRoll) => {
     values.id = uuidv4();
-    addRoll(values);
+    addRoll(values, "activeRolls");
     form.reset();
     navigate("/tabs/library");
   };

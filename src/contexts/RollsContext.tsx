@@ -2,8 +2,10 @@ import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { FilmRoll, Photo } from "../interfaces";
 
 export interface RollsContextType {
-  rolls: FilmRoll[];
-  addRoll: (roll: FilmRoll) => void;
+  activeRolls: FilmRoll[];
+  developedRolls: FilmRoll[];
+  completedRolls: FilmRoll[];
+  addRoll: (roll: FilmRoll, stage: keyof RollsContextType) => void;
   addPhotoToRoll: (id: string, newPhoto: Photo) => void;
 }
 
@@ -14,21 +16,47 @@ export const RollsContext = createContext<RollsContextType | undefined>(
 export const RollsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [rolls, setRolls] = useState<FilmRoll[]>(() => {
-    const savedRolls = localStorage.getItem("filmRolls");
-    return savedRolls ? JSON.parse(savedRolls) : [];
-  });
+  const [activeRolls, setActiveRolls] = useState<FilmRoll[]>([]);
+  const [developedRolls, setDevelopedRolls] = useState<FilmRoll[]>([]);
+  const [completedRolls, setCompletedRolls] = useState<FilmRoll[]>([]);
 
   useEffect(() => {
-    localStorage.setItem("filmRolls", JSON.stringify(rolls));
-  }, [rolls]);
+    const savedRolls = localStorage.getItem("filmRolls");
+    if (savedRolls) {
+      const parsedRolls = JSON.parse(savedRolls);
+      setActiveRolls(parsedRolls.activeRolls || []);
+      setDevelopedRolls(parsedRolls.developedRolls || []);
+      setCompletedRolls(parsedRolls.completedRolls || []);
+    }
+  }, []);
 
-  const addRoll = (roll: FilmRoll) => {
-    setRolls((prevRolls) => [...prevRolls, roll]);
+  useEffect(() => {
+    localStorage.setItem(
+      "filmRolls",
+      JSON.stringify({
+        activeRolls,
+        developedRolls,
+        completedRolls,
+      })
+    );
+  }, [activeRolls, developedRolls, completedRolls]);
+
+  const addRoll = (roll: FilmRoll, stage: keyof RollsContextType) => {
+    switch (stage) {
+      case "activeRolls":
+        setActiveRolls((prev) => [...prev, roll]);
+        break;
+      case "developedRolls":
+        setDevelopedRolls((prev) => [...prev, roll]);
+        break;
+      case "completedRolls":
+        setCompletedRolls((prev) => [...prev, roll]);
+        break;
+    }
   };
 
   const addPhotoToRoll = (id: string, newPhoto: Photo) => {
-    setRolls((prevRolls) =>
+    setActiveRolls((prevRolls) =>
       prevRolls.map((roll) =>
         roll.id === id ? { ...roll, photos: [...roll.photos, newPhoto] } : roll
       )
@@ -36,7 +64,15 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   return (
-    <RollsContext.Provider value={{ rolls, addRoll, addPhotoToRoll }}>
+    <RollsContext.Provider
+      value={{
+        activeRolls,
+        developedRolls,
+        completedRolls,
+        addRoll,
+        addPhotoToRoll,
+      }}
+    >
       {children}
     </RollsContext.Provider>
   );
