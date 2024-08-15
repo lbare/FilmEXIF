@@ -1,14 +1,10 @@
-import React, {
-  createContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
-import { FilmRoll } from "../interfaces";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
+import { FilmRoll, Photo } from "../interfaces";
 
 export interface RollsContextType {
   rolls: FilmRoll[];
   addRoll: (roll: FilmRoll) => void;
+  addPhotoToRoll: (id: string, newPhoto: Photo) => void;
 }
 
 export const RollsContext = createContext<RollsContextType | undefined>(
@@ -31,8 +27,16 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
     setRolls((prevRolls) => [...prevRolls, roll]);
   };
 
+  const addPhotoToRoll = (id: string, newPhoto: Photo) => {
+    setRolls((prevRolls) =>
+      prevRolls.map((roll) =>
+        roll.id === id ? { ...roll, photos: [...roll.photos, newPhoto] } : roll
+      )
+    );
+  };
+
   return (
-    <RollsContext.Provider value={{ rolls, addRoll }}>
+    <RollsContext.Provider value={{ rolls, addRoll, addPhotoToRoll }}>
       {children}
     </RollsContext.Provider>
   );
