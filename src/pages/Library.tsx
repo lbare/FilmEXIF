@@ -1,13 +1,20 @@
+import { useState } from "react";
 import { useRolls } from "../contexts/useRolls";
 import { Box, Text, RingProgress, Center, Button } from "@mantine/core";
 import { Plus } from "@phosphor-icons/react";
 import { FilmRoll } from "../interfaces";
 import { FilmStrip, Camera } from "@phosphor-icons/react";
+import PulseLoader from "react-spinners/PulseLoader";
 
 const Library = () => {
   const { rolls, addPhotoToRoll } = useRolls();
+  const [loadingRolls, setLoadingRolls] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   const addPhoto = (roll: FilmRoll) => {
+    setLoadingRolls((prev) => ({ ...prev, [roll.id]: true }));
+
     const handleLocationSuccess = (position: GeolocationPosition) => {
       const { latitude, longitude } = position.coords;
 
@@ -20,7 +27,6 @@ const Library = () => {
       };
 
       addPhotoToRoll(roll.id, newPhoto);
-      console.log("New photo added with location:", newPhoto);
     };
 
     const handleLocationError = (error: GeolocationPositionError) => {
@@ -53,6 +59,9 @@ const Library = () => {
 
       addPhotoToRoll(roll.id, newPhoto);
     }
+    setTimeout(() => {
+      setLoadingRolls((prev) => ({ ...prev, [roll.id]: false }));
+    }, 1000);
   };
 
   return (
@@ -83,7 +92,7 @@ const Library = () => {
                     ]}
                   />
                   <Box className="flex flex-col items-start px-4 justify-center">
-                    <Text className="text-lg font-semibold leading-tight -mt-1">
+                    <Text className="text-lg font-semibold leading-tight text-neutral-300 -mt-1">
                       {roll.name}
                     </Text>
                     <Box className="flex flex-row w-full items-center justify-start">
@@ -100,29 +109,22 @@ const Library = () => {
                     </Box>
                   </Box>
                 </Box>
-                <Button
-                  className="w-14 h-14 rounded-xl"
-                  variant="light"
-                  onClick={() => addPhoto(roll)}
-                >
-                  <Plus size={30} />
-                </Button>
-              </Box>
-              <Box
-                key={index}
-                className="flex items-center justify-between flex-col p-4 border border-neutral-500 rounded-lg"
-              >
-                {roll.photos.length > 0 &&
-                  roll.photos.map((photo, index) => (
-                    <Box
-                      key={index}
-                      className="flex flex-row items-center justify-start"
-                    >
-                      <Text className="text-xs text-neutral-500">
-                        {photo.location.latitude}, {photo.location.longitude}
-                      </Text>
-                    </Box>
-                  ))}
+                {loadingRolls[roll.id] ? (
+                  <Button
+                    className="w-14 h-14 rounded-xl flex items-center justify-center"
+                    variant="light"
+                  >
+                    <PulseLoader color="#74c0fc" loading size={6} />
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-14 h-14 rounded-xl"
+                    variant="light"
+                    onClick={() => addPhoto(roll)}
+                  >
+                    <Plus size={30} color="#74c0fc" />
+                  </Button>
+                )}
               </Box>
             </>
           ))
