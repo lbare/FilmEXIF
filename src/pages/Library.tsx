@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useRolls } from "../contexts/useRolls";
 import { Box, Text, RingProgress, Center, Button } from "@mantine/core";
 import { FilmRoll, Photo } from "../interfaces";
@@ -14,17 +13,18 @@ import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 
 const Library = () => {
-  const { activeRolls, developedRolls, completedRolls, addPhotoToRoll } =
-    useRolls();
-  const [loadingRolls, setLoadingRolls] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  const {
+    activeRolls,
+    developedRolls,
+    completedRolls,
+    addPhotoToRoll,
+    isLoading,
+    loadingRolls,
+  } = useRolls();
 
   const navigate = useNavigate();
 
   const addPhoto = (roll: FilmRoll) => {
-    setLoadingRolls((prev) => ({ ...prev, [roll.id]: true }));
-
     const handleLocationSuccess = (position: GeolocationPosition) => {
       const { latitude, longitude } = position.coords;
 
@@ -72,9 +72,16 @@ const Library = () => {
 
       addPhotoToRoll(roll.id, newPhoto);
     }
-
-    setLoadingRolls((prev) => ({ ...prev, [roll.id]: false }));
   };
+
+  if (isLoading) {
+    return (
+      <Box className="h-svh flex flex-col mx-auto justify-center items-center">
+        <PulseLoader color="#69DB7C" loading size={10} />
+        <Text className="text-neutral-500 mt-4">Loading rolls...</Text>
+      </Box>
+    );
+  }
 
   if (
     activeRolls.length === 0 &&
@@ -109,13 +116,15 @@ const Library = () => {
                   label={
                     <Center>
                       <Text className="text-lg font-semibold text-green-400">
-                        {roll.photos.length + 1}
+                        {(roll.photos?.length || 0) + 1}
                       </Text>
                     </Center>
                   }
                   sections={[
                     {
-                      value: ((roll.photos.length + 1) / roll.exposures) * 100,
+                      value:
+                        (((roll.photos?.length || 0) + 1) / roll.exposures) *
+                        100,
                       color: "#69DB7C",
                     },
                   ]}
@@ -138,10 +147,11 @@ const Library = () => {
                   </Box>
                 </Box>
               </Box>
-              {loadingRolls[roll.id] ? (
+              {loadingRolls[roll.id] || roll.isLoading ? (
                 <Button
                   className="w-14 h-14 rounded-xl flex items-center justify-center"
                   variant="light"
+                  color="#69DB7C"
                 >
                   <PulseLoader color="#69DB7C" loading size={6} />
                 </Button>

@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Button, TextInput, Box, Select } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { FilmRoll } from "../interfaces";
 import { useNavigate } from "react-router-dom";
 import { useRolls } from "../contexts/useRolls";
 import { v4 as uuidv4 } from "uuid";
+import PulseLoader from "react-spinners/PulseLoader";
 
 const AddRoll = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<FilmRoll>({
     initialValues: {
       id: "",
@@ -16,6 +20,7 @@ const AddRoll = () => {
       iso: 400,
       exposures: 36,
       photos: [],
+      lastUpdated: "",
     },
     validate: {
       name: (value) => (value ? null : "Name is required"),
@@ -29,11 +34,19 @@ const AddRoll = () => {
   const navigate = useNavigate();
   const { addRoll } = useRolls();
 
-  const handleSubmit = (values: FilmRoll) => {
+  const handleSubmit = async (values: FilmRoll) => {
+    setIsLoading(true);
     values.id = uuidv4();
-    addRoll(values, "activeRolls");
-    form.reset();
-    navigate("/tabs/library");
+    const newRoll = { ...values };
+
+    try {
+      await addRoll(newRoll, "activeRolls");
+      form.reset();
+      navigate("/tabs/library");
+    } catch (error) {
+      console.error("Failed to add roll:", error);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -88,7 +101,20 @@ const AddRoll = () => {
           error={form.errors.iso}
         />
 
-        <Button type="submit">Submit</Button>
+        {isLoading ? (
+          <Button variant="light" color="#69DB7C" className="w-full">
+            <PulseLoader color="#69DB7C" size={4} />
+          </Button>
+        ) : (
+          <Button
+            variant="light"
+            color="#69DB7C"
+            className="w-full"
+            type="submit"
+          >
+            Submit
+          </Button>
+        )}
       </form>
     </Box>
   );
