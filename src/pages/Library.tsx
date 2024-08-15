@@ -2,6 +2,7 @@ import { useRolls } from "../contexts/useRolls";
 import { Box, Text, RingProgress, Center, Button } from "@mantine/core";
 import { Plus } from "@phosphor-icons/react";
 import { FilmRoll } from "../interfaces";
+import { FilmStrip, Camera } from "@phosphor-icons/react";
 
 const Library = () => {
   const { rolls, addPhotoToRoll } = useRolls();
@@ -47,16 +48,22 @@ const Library = () => {
                     { value: roll.photos.length + 1 / 0.36, color: "blue" },
                   ]}
                 />
-                <Box className="flex flex-col items-start px-4">
-                  <Text className="text-lg font-semibold pr-2">
+                <Box className="flex flex-col items-start px-4 justify-center">
+                  <Text className="text-lg font-semibold leading-tight -mt-1">
                     {roll.name}
                   </Text>
-                  <Text className="text-xs text-neutral-500">
-                    {`${roll.filmBrand} ${roll.filmName} ${roll.iso}`}
-                  </Text>
-                  <Text className="text-xs text-neutral-500">
-                    {roll.camera}
-                  </Text>
+                  <Box className="flex flex-row w-full items-center justify-start">
+                    <FilmStrip size={16} color="#737373" weight="regular" />
+                    <Text className="pl-2 text-xs text-neutral-500 leading-tight">
+                      {`${roll.filmBrand} ${roll.filmName} ${roll.iso}`}
+                    </Text>
+                  </Box>
+                  <Box className="flex flex-row w-full items-center justify-start">
+                    <Camera size={16} color="#737373" weight="regular" />
+                    <Text className="pl-2 text-xs text-neutral-500 leading-tight">
+                      {roll.camera}
+                    </Text>
+                  </Box>
                 </Box>
               </Box>
               <Button
