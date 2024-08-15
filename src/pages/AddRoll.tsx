@@ -36,11 +36,7 @@ const AddRoll = () => {
         onSubmit={form.onSubmit(handleSubmit)}
         className="space-y-4 w-11/12 md:w-1/3"
       >
-        <TextInput
-          label="Name"
-          placeholder="Optional"
-          {...form.getInputProps("name")}
-        />
+        <TextInput label="Name" {...form.getInputProps("name")} />
         <TextInput
           autoCorrect="off"
           autoComplete="off"

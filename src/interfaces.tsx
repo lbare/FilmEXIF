@@ -1,6 +1,6 @@
 export interface FilmRoll {
   id: string;
-  name?: string;
+  name: string;
   camera: string;
   filmBrand: string;
   filmName: string;
