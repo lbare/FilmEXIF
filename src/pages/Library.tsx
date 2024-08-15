@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useRolls } from "../contexts/useRolls";
 import { Box, Text, RingProgress, Center, Button } from "@mantine/core";
 import { FilmRoll, Photo } from "../interfaces";
@@ -20,16 +19,12 @@ const Library = () => {
     completedRolls,
     addPhotoToRoll,
     isLoading,
+    loadingRolls,
   } = useRolls();
-  const [loadingRolls, setLoadingRolls] = useState<{ [key: string]: boolean }>(
-    {}
-  );
 
   const navigate = useNavigate();
 
   const addPhoto = (roll: FilmRoll) => {
-    setLoadingRolls((prev) => ({ ...prev, [roll.id]: true }));
-
     const handleLocationSuccess = (position: GeolocationPosition) => {
       const { latitude, longitude } = position.coords;
 
@@ -77,8 +72,6 @@ const Library = () => {
 
       addPhotoToRoll(roll.id, newPhoto);
     }
-
-    setLoadingRolls((prev) => ({ ...prev, [roll.id]: false }));
   };
 
   if (isLoading) {
@@ -123,13 +116,15 @@ const Library = () => {
                   label={
                     <Center>
                       <Text className="text-lg font-semibold text-green-400">
-                        {roll.photos.length + 1}
+                        {(roll.photos?.length || 0) + 1}
                       </Text>
                     </Center>
                   }
                   sections={[
                     {
-                      value: ((roll.photos.length + 1) / roll.exposures) * 100,
+                      value:
+                        (((roll.photos?.length || 0) + 1) / roll.exposures) *
+                        100,
                       color: "#69DB7C",
                     },
                   ]}

@@ -34,12 +34,13 @@ const getRollsByCollection = async (
   try {
     const rollsCollection = collection(db, collectionName);
     const lastDateStr = localStorage.getItem("lastUpdated");
-
     let q: Query<DocumentData>;
+
     if (newOnly && lastDateStr) {
+      const lastDate = new Date(lastDateStr);
       q = query(
         rollsCollection,
-        where("date", "<=", lastDateStr),
+        where("date", "<=", lastDate),
         orderBy("date")
       );
     } else {
@@ -60,15 +61,23 @@ const getRollsByCollection = async (
   }
 };
 
-export const getAllRolls = async (): Promise<{
+export const getAllRolls = async (
+  newOnly = false
+): Promise<{
   activeRolls: FilmRoll[];
   developedRolls: FilmRoll[];
   completedRolls: FilmRoll[];
 }> => {
   try {
-    const activeRolls = await getRollsByCollection("activeRolls");
-    const developedRolls = await getRollsByCollection("developedRolls");
-    const completedRolls = await getRollsByCollection("completedRolls");
+    const activeRolls = await getRollsByCollection("activeRolls", newOnly);
+    const developedRolls = await getRollsByCollection(
+      "developedRolls",
+      newOnly
+    );
+    const completedRolls = await getRollsByCollection(
+      "completedRolls",
+      newOnly
+    );
 
     return { activeRolls, developedRolls, completedRolls };
   } catch (error) {
@@ -77,11 +86,13 @@ export const getAllRolls = async (): Promise<{
   }
 };
 
-export const addRollToFirebase = async (roll: FilmRoll): Promise<void> => {
+export const addRollToFirebase = async (roll: FilmRoll) => {
   try {
     const rollsCollection = collection(db, "activeRolls");
-    const docRef = await addDoc(rollsCollection, roll);
+    const timestamp = new Date().toISOString();
+    const docRef = await addDoc(rollsCollection, { ...roll, timestamp });
     console.log("Roll added with ID: ", docRef.id);
+    localStorage.setItem("lastUpdated", timestamp);
   } catch (error) {
     console.error("Error adding roll:", error);
     throw new Error("Failed to add roll");
@@ -119,12 +130,16 @@ export const moveRoll = async (
     const rollDoc = querySnapshot.docs[0];
     const rollData = rollDoc.data() as FilmRoll;
 
+    const newTimestamp = new Date().toISOString();
+
     await addDoc(collection(db, newCollection), {
       ...rollData,
-      stage: newStage,
+      lastUpdated: newTimestamp,
     });
 
     await deleteDoc(doc(db, currentCollection, rollDoc.id));
+
+    localStorage.setItem("lastUpdated", newTimestamp);
 
     console.log(`Roll moved from ${currentStage} to ${newStage}`);
   } catch (error) {

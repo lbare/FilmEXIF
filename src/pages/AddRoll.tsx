@@ -36,7 +36,7 @@ const AddRoll = () => {
   const handleSubmit = async (values: FilmRoll) => {
     setIsLoading(true);
     values.id = uuidv4();
-    const newRoll = { ...values, isLoading: true };
+    const newRoll = { ...values };
 
     try {
       await addRoll(newRoll, "activeRolls");
