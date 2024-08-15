@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { useRolls } from "../contexts/useRolls";
 import { Box, Text, RingProgress, Center, Button } from "@mantine/core";
-import { Plus } from "@phosphor-icons/react";
 import { FilmRoll, Photo } from "../interfaces";
-import { FilmStrip, Camera, Check, CameraRotate } from "@phosphor-icons/react";
+import {
+  FilmStrip,
+  Camera,
+  Folder,
+  CameraRotate,
+  Plus,
+} from "@phosphor-icons/react";
 import PulseLoader from "react-spinners/PulseLoader";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
@@ -88,7 +93,7 @@ const Library = () => {
 
   return (
     <Box className="max-w-lg mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Active Rolls</h2>
+      <h2 className="text-2xl font-bold mb-4">Active</h2>
       <div className="grid gap-4">
         {activeRolls.length > 0 ? (
           activeRolls.map((roll, index) => (
@@ -103,7 +108,7 @@ const Library = () => {
                   roundCaps
                   label={
                     <Center>
-                      <Text className="text-lg font-semibold">
+                      <Text className="text-lg font-semibold text-green-400">
                         {roll.photos.length + 1}
                       </Text>
                     </Center>
@@ -111,7 +116,7 @@ const Library = () => {
                   sections={[
                     {
                       value: ((roll.photos.length + 1) / roll.exposures) * 100,
-                      color: "blue",
+                      color: "#69DB7C",
                     },
                   ]}
                 />
@@ -138,15 +143,16 @@ const Library = () => {
                   className="w-14 h-14 rounded-xl flex items-center justify-center"
                   variant="light"
                 >
-                  <PulseLoader color="#74c0fc" loading size={6} />
+                  <PulseLoader color="#69DB7C" loading size={6} />
                 </Button>
               ) : (
                 <Button
                   className="w-14 h-14 rounded-xl"
                   variant="light"
+                  color="#69DB7C"
                   onClick={() => addPhoto(roll)}
                 >
-                  <Plus size={30} color="#74c0fc" />
+                  <Plus size={30} color="#69DB7C" />
                 </Button>
               )}
             </Box>
@@ -173,8 +179,8 @@ const Library = () => {
                   label={
                     <Center>
                       <CameraRotate
-                        size={18}
-                        color="#fab005"
+                        size={20}
+                        color="#F59F00"
                         weight="regular"
                       />
                     </Center>
@@ -182,7 +188,7 @@ const Library = () => {
                   sections={[
                     {
                       value: 100,
-                      color: "yellow",
+                      color: "#F59F00",
                     },
                   ]}
                 />
@@ -227,13 +233,13 @@ const Library = () => {
                   thickness={3}
                   label={
                     <Center>
-                      <Check size={18} color="#40c057" weight="bold" />
+                      <Folder size={20} color="#228BE6" weight="regular" />
                     </Center>
                   }
                   sections={[
                     {
                       value: 100,
-                      color: "green",
+                      color: "#228BE6",
                     },
                   ]}
                 />
