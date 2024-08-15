@@ -17,6 +17,13 @@ const AddRoll = () => {
       exposures: 36,
       photos: [],
     },
+    validate: {
+      name: (value) => (value ? null : "Name is required"),
+      camera: (value) => (value ? null : "Camera is required"),
+      filmBrand: (value) => (value ? null : "Film Brand is required"),
+      filmName: (value) => (value ? null : "Film Name is required"),
+      iso: (value) => (value ? null : "ISO Rating is required"),
+    },
   });
 
   const navigate = useNavigate();
@@ -36,13 +43,18 @@ const AddRoll = () => {
         onSubmit={form.onSubmit(handleSubmit)}
         className="space-y-4 w-11/12 md:w-1/3"
       >
-        <TextInput label="Name" {...form.getInputProps("name")} />
+        <TextInput
+          label="Name"
+          {...form.getInputProps("name")}
+          error={form.errors.name}
+        />
         <TextInput
           autoCorrect="off"
           autoComplete="off"
           spellCheck="false"
           label="Camera"
           {...form.getInputProps("camera")}
+          error={form.errors.camera}
         />
         <TextInput
           autoCorrect="off"
@@ -50,6 +62,7 @@ const AddRoll = () => {
           spellCheck="false"
           label="Film Brand"
           {...form.getInputProps("filmBrand")}
+          error={form.errors.filmBrand}
         />
         <TextInput
           autoCorrect="off"
@@ -57,6 +70,7 @@ const AddRoll = () => {
           spellCheck="false"
           label="Film Name"
           {...form.getInputProps("filmName")}
+          error={form.errors.filmName}
         />
         <Select
           label="ISO Rating"
@@ -71,6 +85,7 @@ const AddRoll = () => {
           ]}
           {...form.getInputProps("iso")}
           value={form.values.iso.toString()}
+          error={form.errors.iso}
         />
 
         <Button type="submit">Submit</Button>
