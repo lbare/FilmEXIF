@@ -14,8 +14,13 @@ import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 
 const Library = () => {
-  const { activeRolls, developedRolls, completedRolls, addPhotoToRoll } =
-    useRolls();
+  const {
+    activeRolls,
+    developedRolls,
+    completedRolls,
+    addPhotoToRoll,
+    isLoading,
+  } = useRolls();
   const [loadingRolls, setLoadingRolls] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -75,6 +80,15 @@ const Library = () => {
 
     setLoadingRolls((prev) => ({ ...prev, [roll.id]: false }));
   };
+
+  if (isLoading) {
+    return (
+      <Box className="h-svh flex flex-col mx-auto justify-center items-center">
+        <PulseLoader color="#69DB7C" loading size={10} />
+        <Text className="text-neutral-500 mt-4">Loading rolls...</Text>
+      </Box>
+    );
+  }
 
   if (
     activeRolls.length === 0 &&
@@ -138,10 +152,11 @@ const Library = () => {
                   </Box>
                 </Box>
               </Box>
-              {loadingRolls[roll.id] ? (
+              {loadingRolls[roll.id] || roll.isLoading ? (
                 <Button
                   className="w-14 h-14 rounded-xl flex items-center justify-center"
                   variant="light"
+                  color="#69DB7C"
                 >
                   <PulseLoader color="#69DB7C" loading size={6} />
                 </Button>
