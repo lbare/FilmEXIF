@@ -3,21 +3,19 @@ import { useRolls } from "../contexts/useRolls";
 import { Box, Text, RingProgress, Center, Button } from "@mantine/core";
 import { Plus } from "@phosphor-icons/react";
 import { FilmRoll, Photo } from "../interfaces";
-import { FilmStrip, Camera, Check, TestTube } from "@phosphor-icons/react";
+import { FilmStrip, Camera, Check, CameraRotate } from "@phosphor-icons/react";
 import PulseLoader from "react-spinners/PulseLoader";
 import { v4 as uuidv4 } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 const Library = () => {
-  const {
-    activeRolls,
-    developedRolls,
-    completedRolls,
-    addRoll,
-    addPhotoToRoll,
-  } = useRolls();
+  const { activeRolls, developedRolls, completedRolls, addPhotoToRoll } =
+    useRolls();
   const [loadingRolls, setLoadingRolls] = useState<{ [key: string]: boolean }>(
     {}
   );
+
+  const navigate = useNavigate();
 
   const addPhoto = (roll: FilmRoll) => {
     setLoadingRolls((prev) => ({ ...prev, [roll.id]: true }));
@@ -73,104 +71,15 @@ const Library = () => {
     setLoadingRolls((prev) => ({ ...prev, [roll.id]: false }));
   };
 
-  const autoPopulateRolls = () => {
-    const placeholderActiveRolls: FilmRoll[] = [
-      {
-        id: uuidv4(),
-        name: "Portra 400",
-        camera: "Canon AE-1",
-        filmBrand: "Kodak",
-        filmName: "Portra",
-        iso: 400,
-        exposures: 36,
-        photos: [],
-      },
-      {
-        id: uuidv4(),
-        name: "Tri-X 400",
-        camera: "Nikon FM2",
-        filmBrand: "Kodak",
-        filmName: "Tri-X",
-        iso: 400,
-        exposures: 36,
-        photos: [],
-      },
-    ];
-
-    const placeholderDevelopedRolls: FilmRoll[] = [
-      {
-        id: uuidv4(),
-        name: "HP5 400",
-        camera: "Leica M6",
-        filmBrand: "Ilford",
-        filmName: "HP5",
-        iso: 400,
-        exposures: 36,
-        photos: [],
-      },
-      {
-        id: uuidv4(),
-        name: "Superia 400",
-        camera: "Pentax K1000",
-        filmBrand: "Fujifilm",
-        filmName: "Superia",
-        iso: 400,
-        exposures: 36,
-        photos: [],
-      },
-    ];
-
-    const placeholderCompletedRolls: FilmRoll[] = [
-      {
-        id: uuidv4(),
-        name: "Ektar 100",
-        camera: "Olympus OM-1",
-        filmBrand: "Kodak",
-        filmName: "Ektar",
-        iso: 100,
-        exposures: 36,
-        photos: [],
-      },
-      {
-        id: uuidv4(),
-        name: "Ektar 100",
-        camera: "Olympus OM-1",
-        filmBrand: "Kodak",
-        filmName: "Ektar",
-        iso: 100,
-        exposures: 36,
-        photos: [],
-      },
-      {
-        id: uuidv4(),
-        name: "Ektar 100",
-        camera: "Olympus OM-1",
-        filmBrand: "Kodak",
-        filmName: "Ektar",
-        iso: 100,
-        exposures: 36,
-        photos: [],
-      },
-    ];
-
-    placeholderActiveRolls.forEach((roll) => addRoll(roll, "activeRolls"));
-    placeholderDevelopedRolls.forEach((roll) =>
-      addRoll(roll, "developedRolls")
-    );
-    placeholderCompletedRolls.forEach((roll) =>
-      addRoll(roll, "completedRolls")
-    );
-  };
-
   if (
     activeRolls.length === 0 &&
     developedRolls.length === 0 &&
     completedRolls.length === 0
   ) {
     return (
-      <Box className="h-svh flex flex-col mx-auto justify-center items-center p-4">
-        <h2 className="text-2xl font-bold mb-4">No Rolls Available</h2>
-        <Button onClick={autoPopulateRolls} className="w-32">
+      <Box className="h-svh flex flex-col mx-auto justify-center items-center">
+        <h2 className="text-2xl font-bold mb-16">No Rolls Available</h2>
+        <Button onClick={() => navigate("/tabs/add")} className="w-32">
           Add
         </Button>
       </Box>
@@ -263,7 +172,11 @@ const Library = () => {
                   thickness={3}
                   label={
                     <Center>
-                      <TestTube size={18} color="#fab005" weight="duotone" />
+                      <CameraRotate
+                        size={18}
+                        color="#fab005"
+                        weight="regular"
+                      />
                     </Center>
                   }
                   sections={[
