@@ -7,6 +7,7 @@ export interface FilmRoll {
   iso: number;
   exposures: number;
   photos: Photo[];
+  isLoading?: boolean;
 }
 
 export interface Photo {
