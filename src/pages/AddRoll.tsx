@@ -16,7 +16,7 @@ const AddRoll = () => {
       iso: 400,
       exposures: 36,
       photos: [],
-      isActive: true,
+      stage: "active",
     },
   });
 
