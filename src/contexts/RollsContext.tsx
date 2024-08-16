@@ -134,6 +134,8 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
     currentStage: string,
     newStage: string
   ) => {
+    setLoadingRolls((prev) => ({ ...prev, [rollId]: true }));
+
     try {
       await moveRoll(rollId, currentStage, newStage);
       const updatedRolls = await getAllRolls();
@@ -146,6 +148,8 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
       await updateGlobalTimestamp();
     } catch (error) {
       console.error("Failed to move roll:", error);
+    } finally {
+      setLoadingRolls((prev) => ({ ...prev, [rollId]: false }));
     }
   };
 

@@ -1,5 +1,5 @@
 import { useRolls } from "../contexts/useRolls";
-import { Box, Text, RingProgress, Center, Button } from "@mantine/core";
+import { Box, Text, RingProgress, Center, Button, Menu } from "@mantine/core";
 import { FilmRoll, Photo } from "../interfaces";
 import {
   FilmStrip,
@@ -7,6 +7,7 @@ import {
   Folder,
   CameraRotate,
   Plus,
+  Check,
 } from "@phosphor-icons/react";
 import PulseLoader from "react-spinners/PulseLoader";
 import { v4 as uuidv4 } from "uuid";
@@ -18,13 +19,14 @@ const Library = () => {
     developedRolls,
     completedRolls,
     addPhotoToRoll,
+    moveRoll,
     isLoading,
     loadingRolls,
   } = useRolls();
 
   const navigate = useNavigate();
 
-  const addPhoto = (roll: FilmRoll) => {
+  const handleAddPhoto = (roll: FilmRoll) => {
     const handleLocationSuccess = (position: GeolocationPosition) => {
       const { latitude, longitude } = position.coords;
 
@@ -74,6 +76,10 @@ const Library = () => {
     }
   };
 
+  const handleFinishRoll = (roll: FilmRoll) => {
+    moveRoll(roll.id, "active", "developed");
+  };
+
   if (isLoading) {
     return (
       <Box className="h-svh flex flex-col mx-auto justify-center items-center">
@@ -102,76 +108,90 @@ const Library = () => {
     <Box className="max-w-lg mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Active</h2>
       <div className="grid gap-4">
-        {activeRolls.length > 0 ? (
-          activeRolls.map((roll, index) => (
-            <Box
-              key={index}
-              className="flex items-center justify-between flex-row p-4 border border-neutral-500 rounded-lg"
-            >
-              <Box className="flex flex-row items-center">
-                <RingProgress
-                  size={50}
-                  thickness={3}
-                  roundCaps
-                  label={
-                    <Center>
-                      <Text className="text-lg font-semibold text-green-400">
-                        {(roll.photos?.length || 0) + 1}
-                      </Text>
-                    </Center>
-                  }
-                  sections={[
-                    {
-                      value:
-                        (((roll.photos?.length || 0) + 1) / roll.exposures) *
-                        100,
-                      color: "#69DB7C",
-                    },
-                  ]}
-                />
-                <Box className="flex flex-col items-start px-4 justify-center">
-                  <Text className="text-lg font-semibold leading-tight text-neutral-300 -mt-1">
-                    {roll.name}
+        {activeRolls.map((roll, index) => (
+          <Box
+            key={index}
+            className="flex items-center justify-between flex-row p-4 border border-neutral-500 rounded-lg"
+          >
+            <Box className="flex flex-row items-center">
+              <RingProgress
+                size={50}
+                thickness={3}
+                roundCaps
+                label={
+                  <Center>
+                    <Text className="text-lg font-semibold text-green-400">
+                      {(roll.photos?.length || 0) + 1}
+                    </Text>
+                  </Center>
+                }
+                sections={[
+                  {
+                    value:
+                      (((roll.photos?.length || 0) + 1) / roll.exposures) * 100,
+                    color: "#69DB7C",
+                  },
+                ]}
+              />
+              <Box className="flex flex-col items-start px-4 justify-center">
+                <Text className="text-lg font-semibold leading-tight text-neutral-300 -mt-1">
+                  {roll.name}
+                </Text>
+                <Box className="flex flex-row w-full items-center justify-start">
+                  <FilmStrip size={16} color="#737373" weight="regular" />
+                  <Text className="pl-2 text-xs text-neutral-500 leading-tight">
+                    {`${roll.filmBrand} ${roll.filmName} ${roll.iso}`}
                   </Text>
-                  <Box className="flex flex-row w-full items-center justify-start">
-                    <FilmStrip size={16} color="#737373" weight="regular" />
-                    <Text className="pl-2 text-xs text-neutral-500 leading-tight">
-                      {`${roll.filmBrand} ${roll.filmName} ${roll.iso}`}
-                    </Text>
-                  </Box>
-                  <Box className="flex flex-row w-full items-center justify-start">
-                    <Camera size={16} color="#737373" weight="regular" />
-                    <Text className="pl-2 text-xs text-neutral-500 leading-tight">
-                      {roll.camera}
-                    </Text>
-                  </Box>
+                </Box>
+                <Box className="flex flex-row w-full items-center justify-start">
+                  <Camera size={16} color="#737373" weight="regular" />
+                  <Text className="pl-2 text-xs text-neutral-500 leading-tight">
+                    {roll.camera}
+                  </Text>
                 </Box>
               </Box>
-              {loadingRolls[roll.id] || roll.isLoading ? (
-                <Button
-                  className="w-14 h-14 rounded-xl flex items-center justify-center"
-                  variant="light"
-                  color="#69DB7C"
-                >
-                  <PulseLoader color="#69DB7C" loading size={6} />
-                </Button>
-              ) : (
-                <Button
-                  className="w-14 h-14 rounded-xl"
-                  variant="light"
-                  color="#69DB7C"
-                  onClick={() => addPhoto(roll)}
-                >
-                  <Plus size={30} color="#69DB7C" />
-                </Button>
-              )}
             </Box>
-          ))
-        ) : (
-          <Text className="text-center text-neutral-500">
-            No active rolls available.
-          </Text>
-        )}
+
+            {loadingRolls[roll.id] || roll.isLoading ? (
+              <Button
+                className="w-14 h-14 rounded-xl flex items-center justify-center"
+                variant="light"
+                color="#69DB7C"
+              >
+                <PulseLoader color="#69DB7C" loading size={6} />
+              </Button>
+            ) : (roll.photos?.length || 0) + 1 >= roll.exposures ? (
+              <Menu>
+                <Menu.Target>
+                  <Button
+                    className="w-14 h-14 rounded-xl"
+                    variant="light"
+                    color="#69DB7C"
+                  >
+                    <Plus size={30} color="#69DB7C" />
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item onClick={() => handleAddPhoto(roll)}>
+                    Add Another Photo
+                  </Menu.Item>
+                  <Menu.Item onClick={() => handleFinishRoll(roll)}>
+                    Finish Roll
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <Button
+                className="w-14 h-14 rounded-xl"
+                variant="light"
+                color="#69DB7C"
+                onClick={() => handleAddPhoto(roll)}
+              >
+                <Plus size={30} color="#69DB7C" weight="bold" />
+              </Button>
+            )}
+          </Box>
+        ))}
       </div>
 
       <h2 className="text-2xl font-bold mb-4 mt-8">Develop</h2>
@@ -220,6 +240,24 @@ const Library = () => {
                   </Box>
                 </Box>
               </Box>
+              {loadingRolls[roll.id] || roll.isLoading ? (
+                <Button
+                  className="w-14 h-14 rounded-xl flex items-center justify-center"
+                  variant="light"
+                  color="#F59F00"
+                >
+                  <PulseLoader color="#F59F00" loading size={6} />
+                </Button>
+              ) : (
+                <Button
+                  className="w-14 h-14 rounded-xl"
+                  variant="light"
+                  color="#F59F00"
+                  onClick={() => moveRoll(roll.id, "developed", "completed")}
+                >
+                  <Check size={30} color="#F59F00" weight="bold" />
+                </Button>
+              )}
             </Box>
           ))
         ) : (
