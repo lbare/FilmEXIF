@@ -17,6 +17,7 @@ const TabNavigator = () => {
         className="flex flex-1 flex-col"
         variant="pills"
         radius="xl"
+        color="green"
       >
         <div style={{ flex: 1, overflowY: "auto" }}>
           <Tabs.Panel value="library">
