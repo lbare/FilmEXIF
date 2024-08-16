@@ -97,7 +97,12 @@ const Library = () => {
     return (
       <Box className="h-svh flex flex-col mx-auto justify-center items-center">
         <h2 className="text-2xl font-bold mb-16">No Rolls Available</h2>
-        <Button onClick={() => navigate("/tabs/add")} className="w-32">
+        <Button
+          onClick={() => navigate("/tabs/add")}
+          className="w-32"
+          variant="light"
+          color="green"
+        >
           Add
         </Button>
       </Box>
