@@ -20,6 +20,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/tabs/library" replace />} />
             <Route path="/tabs/:tabValue" element={<TabNavigator />} />
+            <Route path="*" element={<Navigate to="/tabs/library" replace />} />
           </Routes>
         </Router>
       </RollsProvider>
