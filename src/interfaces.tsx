@@ -1,6 +1,7 @@
 export interface FilmRoll {
   id: string;
-  name: string;
+  dateCreated: string;
+  name?: string;
   camera: string;
   filmBrand: string;
   filmName: string;
@@ -8,7 +9,6 @@ export interface FilmRoll {
   exposures: number;
   photos: Photo[];
   isLoading?: boolean;
-  lastUpdated: string;
 }
 
 export interface Photo {

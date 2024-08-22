@@ -13,17 +13,15 @@ const AddRoll = () => {
   const form = useForm<FilmRoll>({
     initialValues: {
       id: "",
-      name: "",
+      dateCreated: "",
       camera: "",
       filmBrand: "",
       filmName: "",
       iso: 400,
       exposures: 36,
       photos: [],
-      lastUpdated: "",
     },
     validate: {
-      name: (value) => (value ? null : "Name is required"),
       camera: (value) => (value ? null : "Camera is required"),
       filmBrand: (value) => (value ? null : "Film Brand is required"),
       filmName: (value) => (value ? null : "Film Name is required"),
@@ -37,6 +35,7 @@ const AddRoll = () => {
   const handleSubmit = async (values: FilmRoll) => {
     setIsLoading(true);
     values.id = uuidv4();
+    values.dateCreated = new Date().toISOString();
     const newRoll = { ...values };
 
     try {
@@ -59,7 +58,7 @@ const AddRoll = () => {
         <TextInput
           label="Name"
           {...form.getInputProps("name")}
-          error={form.errors.name}
+          placeholder="Optional"
         />
         <TextInput
           autoCorrect="off"
@@ -68,6 +67,7 @@ const AddRoll = () => {
           label="Camera"
           {...form.getInputProps("camera")}
           error={form.errors.camera}
+          withAsterisk
         />
         <TextInput
           autoCorrect="off"
@@ -76,6 +76,7 @@ const AddRoll = () => {
           label="Film Brand"
           {...form.getInputProps("filmBrand")}
           error={form.errors.filmBrand}
+          withAsterisk
         />
         <TextInput
           autoCorrect="off"
@@ -84,6 +85,7 @@ const AddRoll = () => {
           label="Film Name"
           {...form.getInputProps("filmName")}
           error={form.errors.filmName}
+          withAsterisk
         />
         <Select
           label="ISO Rating"
@@ -99,6 +101,8 @@ const AddRoll = () => {
           {...form.getInputProps("iso")}
           value={form.values.iso.toString()}
           error={form.errors.iso}
+          withAsterisk
+          allowDeselect={false}
         />
 
         {isLoading ? (

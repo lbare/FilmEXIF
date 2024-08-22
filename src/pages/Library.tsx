@@ -89,6 +89,15 @@ const Library = () => {
     );
   }
 
+  const formatDateToLong = (isoDateString: string) => {
+    const date = new Date(isoDateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   if (
     activeRolls.length === 0 &&
     developedRolls.length === 0 &&
@@ -140,7 +149,7 @@ const Library = () => {
               />
               <Box className="flex flex-col items-start px-4 justify-center">
                 <Text className="text-lg font-semibold leading-tight text-neutral-300 -mt-1">
-                  {roll.name}
+                  {roll.name || formatDateToLong(roll.dateCreated)}
                 </Text>
                 <Box className="flex flex-row w-full items-center justify-start">
                   <FilmStrip size={16} color="#737373" weight="regular" />
