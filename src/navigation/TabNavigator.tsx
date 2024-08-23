@@ -33,7 +33,7 @@ const TabNavigator = () => {
 
         <Tabs.List
           style={{ position: "sticky" }}
-          className="bottom-0 bg-neutral-900 pb-4"
+          className="bottom-0 bg-neutral-900 pb-4 pt-2"
           justify="space-evenly"
         >
           <Tabs.Tab
