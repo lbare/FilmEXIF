@@ -1,6 +1,10 @@
+import React from "react";
 import { useRolls } from "../contexts/useRolls";
-import { Box, Text, RingProgress, Center, Button, Menu } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
+import PulseLoader from "react-spinners/PulseLoader";
+import { v4 as uuidv4 } from "uuid";
 import { FilmRoll, Photo } from "../interfaces";
+import { Box, Text, RingProgress, Center, Button, Menu } from "@mantine/core";
 import {
   FilmStrip,
   Camera,
@@ -9,11 +13,8 @@ import {
   Plus,
   Check,
 } from "@phosphor-icons/react";
-import PulseLoader from "react-spinners/PulseLoader";
-import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom";
 
-const Library = () => {
+const Library: React.FC = () => {
   const {
     activeRolls,
     developedRolls,
@@ -80,14 +81,9 @@ const Library = () => {
     moveRoll(roll.id, "active", "developed");
   };
 
-  if (isLoading) {
-    return (
-      <Box className="h-svh flex flex-col mx-auto justify-center items-center">
-        <PulseLoader color="#69DB7C" loading size={10} />
-        <Text className="text-neutral-500 mt-4">Loading rolls...</Text>
-      </Box>
-    );
-  }
+  const handleCompleteRoll = (roll: FilmRoll) => {
+    moveRoll(roll.id, "developed", "completed");
+  };
 
   const formatDateToLong = (isoDateString: string) => {
     const date = new Date(isoDateString);
@@ -98,11 +94,21 @@ const Library = () => {
     });
   };
 
-  if (
+  if (isLoading) {
+    return (
+      <Box className="h-svh flex flex-col mx-auto justify-center items-center">
+        <PulseLoader color="#69DB7C" loading size={10} />
+        <Text className="text-neutral-500 mt-4">Loading rolls...</Text>
+      </Box>
+    );
+  }
+
+  const noRollsAvailable =
     activeRolls.length === 0 &&
     developedRolls.length === 0 &&
-    completedRolls.length === 0
-  ) {
+    completedRolls.length === 0;
+
+  if (noRollsAvailable) {
     return (
       <Box className="h-svh flex flex-col mx-auto justify-center items-center">
         <h2 className="text-2xl font-bold mb-16">No Rolls Available</h2>
@@ -258,7 +264,7 @@ const Library = () => {
                   className="w-14 h-14 rounded-xl"
                   variant="light"
                   color="#F59F00"
-                  onClick={() => moveRoll(roll.id, "developed", "completed")}
+                  onClick={() => handleCompleteRoll(roll)}
                 >
                   <Check size={30} color="#F59F00" weight="bold" />
                 </Button>
