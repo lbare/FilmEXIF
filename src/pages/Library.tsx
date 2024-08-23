@@ -48,7 +48,7 @@ const Library = () => {
         id: uuidv4(),
         location: {
           latitude: 0,
-          longitude: -10,
+          longitude: 0,
         },
         date: new Date().toISOString(),
       };
@@ -66,7 +66,7 @@ const Library = () => {
       const newPhoto: Photo = {
         id: uuidv4(),
         location: {
-          latitude: -10,
+          latitude: 0,
           longitude: 0,
         },
         date: new Date().toISOString(),
@@ -174,7 +174,7 @@ const Library = () => {
               >
                 <PulseLoader color="#69DB7C" loading size={6} />
               </Button>
-            ) : (roll.photos?.length || 0) + 1 >= roll.exposures ? (
+            ) : (
               <Menu>
                 <Menu.Target>
                   <Button
@@ -182,7 +182,7 @@ const Library = () => {
                     variant="light"
                     color="#69DB7C"
                   >
-                    <Plus size={30} color="#69DB7C" />
+                    <Plus size={30} color="#69DB7C" weight="bold" />
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
@@ -194,15 +194,6 @@ const Library = () => {
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
-            ) : (
-              <Button
-                className="w-14 h-14 rounded-xl"
-                variant="light"
-                color="#69DB7C"
-                onClick={() => handleAddPhoto(roll)}
-              >
-                <Plus size={30} color="#69DB7C" weight="bold" />
-              </Button>
             )}
           </Box>
         ))}
