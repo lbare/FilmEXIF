@@ -4,6 +4,9 @@ import {
   FilmStrip,
   Camera,
   CameraRotate,
+  CameraPlus,
+  MapPinPlus,
+  Export,
   Folder,
   Plus,
   Check,
@@ -32,10 +35,6 @@ const stageConfig = {
       onAddPhoto?: (roll: FilmRoll) => void,
       onFinishRoll?: (roll: FilmRoll) => void
     ) => {
-      const currentPhotos = roll.photos?.length || 0;
-      const nextPhotoNumber = currentPhotos + 1;
-      const isRollComplete = nextPhotoNumber >= roll.exposures;
-
       if (isLoading) {
         return (
           <Button
@@ -48,39 +47,29 @@ const stageConfig = {
         );
       }
 
-      if (isRollComplete) {
-        return (
-          <Menu>
-            <Menu.Target>
-              <Button
-                className="w-14 h-14 rounded-xl"
-                variant="light"
-                color="green"
-              >
-                <Plus size={30} color="#69DB7C" />
-              </Button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item onClick={() => onAddPhoto && onAddPhoto(roll)}>
-                Add Another Photo
-              </Menu.Item>
-              <Menu.Item onClick={() => onFinishRoll && onFinishRoll(roll)}>
-                Finish Roll
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        );
-      }
-
       return (
-        <Button
-          className="w-14 h-14 rounded-xl"
-          variant="light"
-          color="green"
-          onClick={() => onAddPhoto && onAddPhoto(roll)}
-        >
-          <Plus size={30} color="#69DB7C" weight="bold" />
-        </Button>
+        <Menu>
+          <Menu.Target>
+            <Button
+              className="w-14 h-14 rounded-xl"
+              variant="light"
+              color="green"
+            >
+              <Plus size={30} color="#69DB7C" weight="bold" />
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown className="flex flex-col justify-between items-end">
+            <Menu.Item onClick={() => onAddPhoto && onAddPhoto(roll)}>
+              <MapPinPlus size={32} color="#69DB7C" />
+            </Menu.Item>
+            <Menu.Item onClick={() => onAddPhoto && onAddPhoto(roll)}>
+              <CameraPlus size={32} color="#69DB7C" />
+            </Menu.Item>
+            <Menu.Item onClick={() => onFinishRoll && onFinishRoll(roll)}>
+              <Export size={32} color="#69DB7C" />
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       );
     },
     progressValue: (roll: FilmRoll) =>
