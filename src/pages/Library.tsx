@@ -13,6 +13,7 @@ import {
   Plus,
   Check,
 } from "@phosphor-icons/react";
+import { formatDateToLong } from "../utils/dateUtils";
 
 const Library: React.FC = () => {
   const {
@@ -83,15 +84,6 @@ const Library: React.FC = () => {
 
   const handleCompleteRoll = (roll: FilmRoll) => {
     moveRoll(roll.id, "developed", "completed");
-  };
-
-  const formatDateToLong = (isoDateString: string) => {
-    const date = new Date(isoDateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   if (isLoading) {
