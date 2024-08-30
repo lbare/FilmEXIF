@@ -88,6 +88,10 @@ const Library: React.FC = () => {
     setModalOpened(true);
   };
 
+  const handleAddPhotoWithImage = (roll: FilmRoll) => {
+    console.log("Adding photo with image to roll:", roll);
+  };
+
   const longPressEventHandlers = useLongPress(
     () => {
       if (selectedRoll) {
@@ -318,7 +322,7 @@ const Library: React.FC = () => {
           opened={modalOpened}
           onClose={() => setModalOpened(false)}
           roll={selectedRoll}
-          onAddPhoto={handleAddPhoto}
+          onAddPhotoWithImage={handleAddPhotoWithImage}
           onFinishRoll={handleFinishRoll}
         />
       )}

@@ -1,12 +1,13 @@
 import React from "react";
-import { Modal, Button, Group } from "@mantine/core";
+import { Modal, Button, Stack } from "@mantine/core";
 import { FilmRoll } from "../interfaces";
+import { CameraPlus, Export } from "@phosphor-icons/react";
 
 interface RollOptionsModalProps {
   opened: boolean;
   onClose: () => void;
   roll: FilmRoll;
-  onAddPhoto: (roll: FilmRoll) => void;
+  onAddPhotoWithImage: (roll: FilmRoll) => void;
   onFinishRoll: (roll: FilmRoll) => void;
 }
 
@@ -14,43 +15,39 @@ const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
   opened,
   onClose,
   roll,
-  onAddPhoto,
+  onAddPhotoWithImage,
   onFinishRoll,
 }) => {
   return (
-    <Modal opened={opened} onClose={onClose} title="Roll Options">
-      <Group>
+    <Modal opened={opened} onClose={onClose} title="Roll Options" centered>
+      <Stack>
         <Button
-          variant="light"
+          size="xl"
+          variant="filled"
           color="green"
           onClick={() => {
-            onAddPhoto(roll);
+            onAddPhotoWithImage(roll);
             onClose();
           }}
+          style={{ display: "flex", alignItems: "center" }}
         >
-          Add Another Photo
+          <CameraPlus size={24} style={{ marginRight: "10px" }} />
+          Add Photo with Image
         </Button>
         <Button
-          variant="light"
-          color="green"
-          onClick={() => {
-            onAddPhoto(roll);
-            onClose();
-          }}
-        >
-          Add Photo with Camera
-        </Button>
-        <Button
-          variant="light"
-          color="green"
+          size="xl"
+          variant="filled"
+          color="blue"
           onClick={() => {
             onFinishRoll(roll);
             onClose();
           }}
+          style={{ display: "flex", alignItems: "center" }}
         >
+          <Export size={24} style={{ marginRight: "10px" }} />
           Finish Roll
         </Button>
-      </Group>
+      </Stack>
     </Modal>
   );
 };
