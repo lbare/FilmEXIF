@@ -1,3 +1,4 @@
+// Library.tsx
 import React, { useState } from "react";
 import { useRolls } from "../contexts/useRolls";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import { formatDateToLong } from "../utils/dateUtils";
 import RollOptionsModal from "../components/RollOptionsModal";
+import { useLongPress } from "@uidotdev/usehooks";
 
 const Library: React.FC = () => {
   const [modalOpened, setModalOpened] = useState(false);
@@ -84,6 +86,22 @@ const Library: React.FC = () => {
   const openRollOptionsModal = (roll: FilmRoll) => {
     setSelectedRoll(roll);
     setModalOpened(true);
+  };
+
+  const longPressEventHandlers = useLongPress(
+    () => {
+      if (selectedRoll) {
+        openRollOptionsModal(selectedRoll);
+      }
+    },
+    {
+      threshold: 250,
+    }
+  );
+
+  const handleButtonClick = (roll: FilmRoll) => {
+    setSelectedRoll(roll);
+    handleAddPhoto(roll);
   };
 
   if (isLoading) {
@@ -177,7 +195,8 @@ const Library: React.FC = () => {
                 className="w-14 h-14 rounded-xl"
                 variant="light"
                 color="#69DB7C"
-                onClick={() => openRollOptionsModal(roll)}
+                onClick={() => handleButtonClick(roll)}
+                {...longPressEventHandlers}
               >
                 <Plus size={30} color="#69DB7C" weight="bold" />
               </Button>
@@ -294,7 +313,6 @@ const Library: React.FC = () => {
         ))}
       </div>
 
-      {/* Roll Options Modal */}
       {selectedRoll && (
         <RollOptionsModal
           opened={modalOpened}
