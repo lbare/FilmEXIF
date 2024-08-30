@@ -66,6 +66,10 @@ const Library: React.FC = () => {
     }
   };
 
+  const handleAddPhotoWithImage = (roll: FilmRoll, image: string) => {
+    console.log("Captured image: ", image, " for roll: ", roll);
+  };
+
   const handleFinishRoll = (roll: FilmRoll) => {
     moveRoll(roll.id, "active", "developed");
   };
@@ -77,10 +81,6 @@ const Library: React.FC = () => {
   const openRollOptionsModal = (roll: FilmRoll) => {
     setSelectedRoll(roll);
     setModalOpened(true);
-  };
-
-  const handleAddPhotoWithImage = (roll: FilmRoll) => {
-    console.log("Adding photo with image to roll:", roll);
   };
 
   const longPressEventHandlers = useLongPress(

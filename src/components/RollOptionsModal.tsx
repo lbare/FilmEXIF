@@ -1,50 +1,67 @@
 import React from "react";
 import { Modal, Button, Stack } from "@mantine/core";
 import { FilmRoll } from "../interfaces";
-import { CameraPlus, Export } from "@phosphor-icons/react";
 
 interface RollOptionsModalProps {
   opened: boolean;
   onClose: () => void;
   roll: FilmRoll;
-  onAddPhotoWithImage: (roll: FilmRoll) => void;
   onFinishRoll: (roll: FilmRoll) => void;
+  onAddPhotoWithImage: (roll: FilmRoll, image: string) => void;
 }
 
 const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
   opened,
   onClose,
   roll,
-  onAddPhotoWithImage,
   onFinishRoll,
+  onAddPhotoWithImage,
 }) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        onAddPhotoWithImage(roll, base64String);
+        onClose();
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Modal opened={opened} onClose={onClose} title="Roll Options" centered>
       <Stack>
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: "none" }}
+          id="camera-input"
+          onChange={handleFileChange}
+        />
+        <label htmlFor="camera-input" style={{ width: "100%" }}>
+          <Button
+            fullWidth
+            size="xl"
+            variant="filled"
+            color="green"
+            component="span"
+          >
+            Add Photo with Camera
+          </Button>
+        </label>
         <Button
+          fullWidth
           size="xl"
           variant="filled"
-          color="green"
-          onClick={() => {
-            onAddPhotoWithImage(roll);
-            onClose();
-          }}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <CameraPlus size={24} style={{ marginRight: "10px" }} />
-          Add Photo with Image
-        </Button>
-        <Button
-          size="xl"
-          variant="filled"
-          color="blue"
+          color="red"
           onClick={() => {
             onFinishRoll(roll);
             onClose();
           }}
-          style={{ display: "flex", alignItems: "center" }}
         >
-          <Export size={24} style={{ marginRight: "10px" }} />
           Finish Roll
         </Button>
       </Stack>
