@@ -99,7 +99,7 @@ const Library: React.FC = () => {
       }
     },
     {
-      threshold: 250,
+      threshold: 150,
     }
   );
 
