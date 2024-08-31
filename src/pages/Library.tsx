@@ -66,10 +66,6 @@ const Library: React.FC = () => {
     }
   };
 
-  const handleAddPhotoWithImage = (roll: FilmRoll, image: string) => {
-    console.log("Captured image: ", image, " for roll: ", roll);
-  };
-
   const handleFinishRoll = (roll: FilmRoll) => {
     moveRoll(roll.id, "active", "developed");
   };
@@ -164,7 +160,6 @@ const Library: React.FC = () => {
           opened={modalOpened}
           onClose={() => setModalOpened(false)}
           roll={selectedRoll}
-          onAddPhotoWithImage={handleAddPhotoWithImage}
           onFinishRoll={handleFinishRoll}
         />
       )}

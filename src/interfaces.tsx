@@ -18,4 +18,5 @@ export interface Photo {
     longitude: number;
   };
   date: string;
+  imageUrl?: string;
 }
