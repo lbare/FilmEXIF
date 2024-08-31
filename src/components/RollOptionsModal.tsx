@@ -17,24 +17,55 @@ const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
   onFinishRoll,
 }) => {
   const { addPhotoToRoll } = useRolls();
-  
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        addPhotoToRoll(
-          roll.id,
-          {
-            id: `photo-${Date.now()}`,
-            date: new Date().toISOString(),
-            location: { latitude: 0, longitude: 0 },
-          },
-          base64String
-        );
-        onClose();
+        const img = new Image();
+        img.src = reader.result as string;
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxDimension = 1024;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxDimension) {
+              height = Math.floor((height * maxDimension) / width);
+              width = maxDimension;
+            }
+          } else {
+            if (height > maxDimension) {
+              width = Math.floor((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const resizedImage = canvas.toDataURL("image/jpeg", 0.8);
+            addPhotoToRoll(
+              roll.id,
+              {
+                id: `photo-${Date.now()}`,
+                date: new Date().toISOString(),
+                location: { latitude: 0, longitude: 0 },
+              },
+              resizedImage
+            );
+          }
+
+          onClose();
+        };
       };
+
       reader.readAsDataURL(file);
     }
   };
