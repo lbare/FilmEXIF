@@ -1,16 +1,13 @@
 import React from "react";
 import { Modal, Button, Stack } from "@mantine/core";
 import { FilmRoll } from "../interfaces";
-import { addPhotoToRollInFirebase } from "../firebase/config";
-import { v4 as uuidv4 } from "uuid";
+import { useRolls } from "../contexts/useRolls";
 
 interface RollOptionsModalProps {
   opened: boolean;
   onClose: () => void;
   roll: FilmRoll;
   onFinishRoll: (roll: FilmRoll) => void;
-  onUploadStart: () => void;
-  onUploadEnd: () => void;
 }
 
 const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
@@ -18,31 +15,25 @@ const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
   onClose,
   roll,
   onFinishRoll,
-  onUploadStart,
-  onUploadEnd,
 }) => {
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const { addPhotoToRoll } = useRolls();
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      onUploadStart();
-
       const reader = new FileReader();
-      reader.onloadend = async () => {
+      reader.onloadend = () => {
         const base64String = reader.result as string;
-        onClose();
-
-        await addPhotoToRollInFirebase(
+        addPhotoToRoll(
           roll.id,
           {
-            id: uuidv4(),
-            location: { latitude: 0, longitude: 0 },
+            id: `photo-${Date.now()}`,
             date: new Date().toISOString(),
+            location: { latitude: 0, longitude: 0 },
           },
           base64String
         );
-        onUploadEnd();
+        onClose();
       };
       reader.readAsDataURL(file);
     }

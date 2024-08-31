@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Text } from "@mantine/core";
-
 import RollItem from "./RollItem";
 import { FilmRoll } from "../interfaces";
 
@@ -9,7 +8,6 @@ interface RollListProps {
   rolls: FilmRoll[];
   stage: "active" | "developed" | "completed";
   loadingRolls: { [key: string]: boolean };
-  isUploading?: boolean;
   onAddPhoto: (roll: FilmRoll) => void;
   onFinishRoll: (roll: FilmRoll) => void;
   onCompleteRoll?: (roll: FilmRoll) => void;
@@ -21,7 +19,6 @@ const RollList: React.FC<RollListProps> = ({
   rolls,
   stage,
   loadingRolls,
-  isUploading,
   onAddPhoto,
   onFinishRoll,
   onCompleteRoll,
@@ -37,9 +34,7 @@ const RollList: React.FC<RollListProps> = ({
               key={roll.id}
               roll={roll}
               stage={stage}
-              isLoading={
-                loadingRolls[roll.id] || isUploading || roll.isLoading || false
-              }
+              isLoading={loadingRolls[roll.id] || roll.isLoading || false}
               onAddPhoto={() => onAddPhoto(roll)}
               onFinishRoll={() => onFinishRoll(roll)}
               onCompleteRoll={

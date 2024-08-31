@@ -178,7 +178,7 @@ export const addPhotoToRollInFirebase = async (
 
     const updatedPhoto = {
       ...newPhoto,
-      ...(imageUrl && { imageUrl }), // Include imageUrl only if it's defined
+      ...(imageUrl && { imageUrl }),
     };
 
     const updatedPhotos = [...rollData.photos, updatedPhoto];
@@ -243,7 +243,6 @@ export const moveRoll = async (
     const rollData = rollDoc.data() as FilmRoll;
 
     const newTimestamp = new Date().toISOString();
-
     await addDoc(collection(db, newCollection), {
       ...rollData,
       lastUpdated: newTimestamp,
