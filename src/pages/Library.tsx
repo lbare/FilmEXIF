@@ -1,3 +1,4 @@
+// Library.tsx
 import React, { useState } from "react";
 import { useRolls } from "../contexts/useRolls";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ import { useLongPress } from "@uidotdev/usehooks";
 const Library: React.FC = () => {
   const [modalOpened, setModalOpened] = useState(false);
   const [selectedRoll, setSelectedRoll] = useState<FilmRoll | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const {
     activeRolls,
@@ -95,6 +97,14 @@ const Library: React.FC = () => {
     handleAddPhoto(roll);
   };
 
+  const handleUploadStart = () => {
+    setIsUploading(true);
+  };
+
+  const handleUploadEnd = () => {
+    setIsUploading(false);
+  };
+
   if (isLoading) {
     return (
       <Box className="h-svh flex flex-col mx-auto justify-center items-center">
@@ -132,6 +142,7 @@ const Library: React.FC = () => {
         rolls={activeRolls}
         stage="active"
         loadingRolls={loadingRolls}
+        isUploading={isUploading}
         onAddPhoto={handleButtonClick}
         onFinishRoll={handleFinishRoll}
         longPressEventHandlers={longPressEventHandlers}
@@ -161,6 +172,8 @@ const Library: React.FC = () => {
           onClose={() => setModalOpened(false)}
           roll={selectedRoll}
           onFinishRoll={handleFinishRoll}
+          onUploadStart={handleUploadStart}
+          onUploadEnd={handleUploadEnd}
         />
       )}
     </Box>

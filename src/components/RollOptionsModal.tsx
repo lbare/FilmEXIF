@@ -9,6 +9,8 @@ interface RollOptionsModalProps {
   onClose: () => void;
   roll: FilmRoll;
   onFinishRoll: (roll: FilmRoll) => void;
+  onUploadStart: () => void;
+  onUploadEnd: () => void;
 }
 
 const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
@@ -16,15 +18,20 @@ const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
   onClose,
   roll,
   onFinishRoll,
+  onUploadStart,
+  onUploadEnd,
 }) => {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      onUploadStart();
+
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64String = reader.result as string;
+        onClose();
 
         await addPhotoToRollInFirebase(
           roll.id,
@@ -35,8 +42,7 @@ const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
           },
           base64String
         );
-
-        onClose();
+        onUploadEnd();
       };
       reader.readAsDataURL(file);
     }
