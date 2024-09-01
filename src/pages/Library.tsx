@@ -7,7 +7,6 @@ import { FilmRoll, Photo } from "../interfaces";
 import { Box, Text, Button } from "@mantine/core";
 import RollOptionsModal from "../components/RollOptionsModal";
 import RollList from "../components/RollList";
-import { useLongPress } from "@uidotdev/usehooks";
 
 const Library: React.FC = () => {
   const [modalOpened, setModalOpened] = useState(false);
@@ -79,22 +78,6 @@ const Library: React.FC = () => {
     setModalOpened(true);
   };
 
-  const longPressEventHandlers = useLongPress(
-    () => {
-      if (selectedRoll) {
-        openRollOptionsModal(selectedRoll);
-      }
-    },
-    {
-      threshold: 150,
-    }
-  );
-
-  const handleButtonClick = (roll: FilmRoll) => {
-    setSelectedRoll(roll);
-    handleAddPhoto(roll);
-  };
-
   if (isLoading) {
     return (
       <Box className="h-svh flex flex-col mx-auto justify-center items-center">
@@ -132,9 +115,9 @@ const Library: React.FC = () => {
         rolls={activeRolls}
         stage="active"
         loadingRolls={loadingRolls}
-        onAddPhoto={handleButtonClick}
+        onAddPhoto={handleAddPhoto}
         onFinishRoll={handleFinishRoll}
-        longPressEventHandlers={longPressEventHandlers}
+        openRollOptionsModal={openRollOptionsModal}
       />
 
       <RollList
@@ -142,8 +125,9 @@ const Library: React.FC = () => {
         rolls={developedRolls}
         stage="developed"
         loadingRolls={loadingRolls}
-        onAddPhoto={handleButtonClick}
+        onAddPhoto={handleAddPhoto}
         onFinishRoll={handleCompleteRoll}
+        openRollOptionsModal={openRollOptionsModal}
       />
 
       <RollList
@@ -151,8 +135,9 @@ const Library: React.FC = () => {
         rolls={completedRolls}
         stage="completed"
         loadingRolls={loadingRolls}
-        onAddPhoto={handleButtonClick}
+        onAddPhoto={handleAddPhoto}
         onFinishRoll={handleCompleteRoll}
+        openRollOptionsModal={openRollOptionsModal}
       />
 
       {selectedRoll && (

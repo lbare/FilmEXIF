@@ -11,7 +11,7 @@ interface RollListProps {
   onAddPhoto: (roll: FilmRoll) => void;
   onFinishRoll: (roll: FilmRoll) => void;
   onCompleteRoll?: (roll: FilmRoll) => void;
-  longPressEventHandlers?: React.HTMLAttributes<HTMLButtonElement>;
+  openRollOptionsModal: (roll: FilmRoll) => void;
 }
 
 const RollList: React.FC<RollListProps> = ({
@@ -22,7 +22,7 @@ const RollList: React.FC<RollListProps> = ({
   onAddPhoto,
   onFinishRoll,
   onCompleteRoll,
-  longPressEventHandlers,
+  openRollOptionsModal,
 }) => {
   return (
     <Box>
@@ -40,7 +40,7 @@ const RollList: React.FC<RollListProps> = ({
               onCompleteRoll={
                 onCompleteRoll ? () => onCompleteRoll(roll) : undefined
               }
-              longPressEventHandlers={longPressEventHandlers}
+              openRollOptionsModal={openRollOptionsModal}
             />
           ))
         ) : (

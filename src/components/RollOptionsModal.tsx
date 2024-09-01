@@ -71,7 +71,7 @@ const RollOptionsModal: React.FC<RollOptionsModalProps> = ({
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Roll Options" centered>
+    <Modal opened={opened} onClose={onClose} centered radius={10}>
       <Stack>
         <input
           type="file"
