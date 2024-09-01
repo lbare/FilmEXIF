@@ -2,17 +2,13 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=/FilmEXIF" />
     <script>
       const pathname = window.location.pathname;
-      const redirect = pathname.replace("/FilmEXIF", "").length > 0;
 
-      if (redirect) {
+      if (!pathname.startsWith("/FilmEXIF")) {
         window.location.replace(
           "/FilmEXIF" + pathname + window.location.search + window.location.hash
         );
-      } else {
-        window.location.replace("/FilmEXIF");
       }
     </script>
   </head>
