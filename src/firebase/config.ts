@@ -15,6 +15,12 @@ import {
   getDoc,
   doc,
 } from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  uploadString,
+  getDownloadURL,
+} from "firebase/storage";
 import { FilmRoll, Photo } from "../interfaces.tsx";
 
 const firebaseConfig = {
@@ -29,6 +35,7 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 const globalTimestampDocRef = doc(db, "metadata", "globalLastUpdated");
 
@@ -128,11 +135,36 @@ export const addRollToFirebase = async (roll: FilmRoll) => {
   }
 };
 
+export const uploadImageToFirebase = async (
+  imageBase64: string,
+  rollId: string,
+  photoId: string
+): Promise<string> => {
+  try {
+    const imageRef = ref(storage, `images/${rollId}/${photoId}.png`);
+    await uploadString(imageRef, imageBase64, "data_url");
+    const downloadURL = await getDownloadURL(imageRef);
+
+    console.log("Image uploaded successfully:", downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw new Error("Failed to upload image");
+  }
+};
+
 export const addPhotoToRollInFirebase = async (
   rollId: string,
-  newPhoto: Photo
+  newPhoto: Photo,
+  imageBase64?: string
 ) => {
   try {
+    let imageUrl: string | undefined = undefined;
+
+    if (imageBase64) {
+      imageUrl = await uploadImageToFirebase(imageBase64, rollId, newPhoto.id);
+    }
+
     const rollsCollection = collection(db, "activeRolls");
     const q = query(rollsCollection, where("id", "==", rollId));
     const querySnapshot = await getDocs(q);
@@ -144,7 +176,12 @@ export const addPhotoToRollInFirebase = async (
     const rollDoc = querySnapshot.docs[0];
     const rollData = rollDoc.data() as FilmRoll;
 
-    const updatedPhotos = [...rollData.photos, newPhoto];
+    const updatedPhoto = {
+      ...newPhoto,
+      ...(imageUrl && { imageUrl }),
+    };
+
+    const updatedPhotos = [...rollData.photos, updatedPhoto];
 
     const newTimestamp = new Date().toISOString();
 
@@ -184,15 +221,15 @@ export const moveRoll = async (
       currentStage === "active"
         ? "activeRolls"
         : currentStage === "developed"
-          ? "developedRolls"
-          : "completedRolls";
+        ? "developedRolls"
+        : "completedRolls";
 
     const newCollection =
       newStage === "active"
         ? "activeRolls"
         : newStage === "developed"
-          ? "developedRolls"
-          : "completedRolls";
+        ? "developedRolls"
+        : "completedRolls";
 
     const rollsCollection = collection(db, currentCollection);
     const q = query(rollsCollection, where("id", "==", rollId));
@@ -206,7 +243,6 @@ export const moveRoll = async (
     const rollData = rollDoc.data() as FilmRoll;
 
     const newTimestamp = new Date().toISOString();
-
     await addDoc(collection(db, newCollection), {
       ...rollData,
       lastUpdated: newTimestamp,

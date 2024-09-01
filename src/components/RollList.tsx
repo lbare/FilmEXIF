@@ -11,7 +11,7 @@ interface RollListProps {
   onAddPhoto: (roll: FilmRoll) => void;
   onFinishRoll: (roll: FilmRoll) => void;
   onCompleteRoll?: (roll: FilmRoll) => void;
-  longPressEventHandlers?: React.HTMLAttributes<HTMLButtonElement>;
+  openRollOptionsModal: (roll: FilmRoll) => void;
 }
 
 const RollList: React.FC<RollListProps> = ({
@@ -22,16 +22,16 @@ const RollList: React.FC<RollListProps> = ({
   onAddPhoto,
   onFinishRoll,
   onCompleteRoll,
-  longPressEventHandlers,
+  openRollOptionsModal,
 }) => {
   return (
     <Box>
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
       <div className="grid gap-4">
         {rolls.length > 0 ? (
-          rolls.map((roll, index) => (
+          rolls.map((roll) => (
             <RollItem
-              key={index}
+              key={roll.id}
               roll={roll}
               stage={stage}
               isLoading={loadingRolls[roll.id] || roll.isLoading || false}
@@ -40,7 +40,7 @@ const RollList: React.FC<RollListProps> = ({
               onCompleteRoll={
                 onCompleteRoll ? () => onCompleteRoll(roll) : undefined
               }
-              longPressEventHandlers={longPressEventHandlers}
+              openRollOptionsModal={openRollOptionsModal}
             />
           ))
         ) : (

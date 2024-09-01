@@ -4,6 +4,7 @@ import { FilmStrip, Camera, Plus, Check, Folder } from "@phosphor-icons/react";
 import PulseLoader from "react-spinners/PulseLoader";
 import { FilmRoll } from "../interfaces";
 import { formatDateToLong } from "../utils/dateUtils";
+import { useLongPress } from "@uidotdev/usehooks";
 
 interface RollItemProps {
   roll: FilmRoll;
@@ -12,7 +13,7 @@ interface RollItemProps {
   onAddPhoto: () => void;
   onFinishRoll: () => void;
   onCompleteRoll?: () => void;
-  longPressEventHandlers?: React.HTMLAttributes<HTMLButtonElement>;
+  openRollOptionsModal: (roll: FilmRoll) => void;
 }
 
 const RollItem: React.FC<RollItemProps> = ({
@@ -22,8 +23,15 @@ const RollItem: React.FC<RollItemProps> = ({
   onAddPhoto,
   onFinishRoll,
   onCompleteRoll,
-  longPressEventHandlers,
+  openRollOptionsModal,
 }) => {
+  const longPressEventHandlers = useLongPress(
+    () => openRollOptionsModal(roll),
+    {
+      threshold: 150,
+    }
+  );
+
   const renderActionButton = () => {
     switch (stage) {
       case "active":

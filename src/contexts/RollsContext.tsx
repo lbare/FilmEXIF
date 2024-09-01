@@ -14,7 +14,7 @@ export interface RollsContextType {
   developedRolls: FilmRoll[];
   completedRolls: FilmRoll[];
   addRoll: (roll: FilmRoll, stage: keyof RollsContextType) => void;
-  addPhotoToRoll: (id: string, newPhoto: Photo) => void;
+  addPhotoToRoll: (id: string, newPhoto: Photo, imageBase64?: string) => void;
   moveRoll: (rollId: string, currentStage: string, newStage: string) => void;
   isLoading: boolean;
   loadingRolls: { [key: string]: boolean };
@@ -101,11 +101,15 @@ export const RollsProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const addPhotoToRoll = async (id: string, newPhoto: Photo) => {
+  const addPhotoToRoll = async (
+    id: string,
+    newPhoto: Photo,
+    imageBase64?: string
+  ) => {
     setLoadingRolls((prev) => ({ ...prev, [id]: true }));
 
     try {
-      await addPhotoToRollInFirebase(id, newPhoto);
+      await addPhotoToRollInFirebase(id, newPhoto, imageBase64);
 
       const updatedActiveRolls = activeRolls.map((roll) =>
         roll.id === id ? { ...roll, photos: [...roll.photos, newPhoto] } : roll
