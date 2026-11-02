@@ -1,0 +1,94 @@
+/* The label always prints black on white, whatever the app theme. */
+.label {
+  background: white;
+  color: #111;
+  border: 1px dashed #999;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  max-width: 148mm; /* A6 landscape */
+  margin: 0 auto;
+}
+
+.strip {
+  max-width: 180mm;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.title {
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.meta {
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: #333;
+}
+
+.qr {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+}
+
+.strip .qr {
+  width: 52px;
+  height: 52px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 700;
+  border-bottom: 1px solid #333;
+  padding: 2px 4px;
+}
+
+.table td {
+  padding: 1.5px 4px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.notes {
+  max-width: 60mm;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skipped {
+  color: #999;
+}
+
+@media print {
+  .noPrint {
+    display: none !important;
+  }
+
+  .label {
+    border-color: #bbb;
+    margin: 0;
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 10mm;
+  }
+}

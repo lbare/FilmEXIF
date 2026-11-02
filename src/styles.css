@@ -23,6 +23,8 @@ body {
 }
 
 .leaflet-container {
+  /* Contain Leaflet's z-indexes so maps never draw over drawers, modals and menus. */
+  isolation: isolate;
   font: inherit;
   background: var(--mantine-color-body);
 }
@@ -46,4 +48,8 @@ body {
 }
 [data-mantine-color-scheme='dark'] .leaflet-control-attribution a {
   color: var(--mantine-color-dark-1);
+}
+
+.tiles-dark {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.6);
 }
