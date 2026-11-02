@@ -14,6 +14,7 @@ const ShootRedirect = lazy(() => import('./pages/shoot/ShootRedirect'))
 const GearPage = lazy(() => import('./pages/gear/GearPage'))
 const FridgePage = lazy(() => import('./pages/fridge/FridgePage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const MapPage = lazy(() => import('./pages/map/MapPage'))
 
 /** For pages outside the app shell: wait for data before rendering. */
 function Bare() {
@@ -37,6 +38,7 @@ export const routes: RouteObject[] = [
       { path: 'shoot', element: <ShootRedirect /> },
       { path: 'fridge', element: <FridgePage /> },
       { path: 'gear', element: <GearPage /> },
+      { path: 'map', element: <MapPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
