@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   Group,
-  Paper,
   SegmentedControl,
   SimpleGrid,
   Stack,
@@ -22,6 +21,7 @@ import { useApi, useData } from '../../data/DataProvider'
 import type { FilmStock } from '../../data/types'
 import { FORMAT_OPTIONS, formatMoney } from '../../lib/format'
 import { FilmForm } from './FilmForm'
+import { Stat } from '../../components/Stat'
 
 export function expiryStatus(expiresOn: string | null): { label: string; color: string } | null {
   if (!expiresOn) return null
@@ -173,15 +173,3 @@ export default function FridgePage() {
   )
 }
 
-function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
-  return (
-    <Paper withBorder p="sm">
-      <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-        {label}
-      </Text>
-      <Text fw={700} size="lg" c={color} className="tabular">
-        {value}
-      </Text>
-    </Paper>
-  )
-}

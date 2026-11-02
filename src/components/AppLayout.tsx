@@ -14,9 +14,10 @@ import {
   Sparkle,
   type Icon,
 } from '@phosphor-icons/react'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router'
-import { useData } from '../data/DataProvider'
+import { useApi, useData } from '../data/DataProvider'
+import { syncPhotos } from '../lib/photos'
 import { PageLoader } from './PageLoader'
 
 interface NavItem {
@@ -61,6 +62,20 @@ function SyncIndicator() {
       </Box>
     </Tooltip>
   )
+}
+
+/** Upload reference photos taken offline whenever we're online. */
+function PhotoSync() {
+  const api = useApi()
+  const { frames, loading } = useData()
+  const { online } = useNetwork()
+  const pending = frames.filter((f) => f.photo?.status === 'local').length
+  useEffect(() => {
+    if (!loading && online) void syncPhotos(api, frames)
+    // Re-run when the number of local photos changes or we come back online, not on every edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, loading, online, pending])
+  return null
 }
 
 export function AppLayout() {
@@ -162,6 +177,7 @@ export function AppLayout() {
           })}
         </Group>
       </AppShell.Footer>
+      <PhotoSync />
     </AppShell>
   )
 }

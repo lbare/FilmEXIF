@@ -108,3 +108,11 @@ export function ev100(aperture: Aperture | null, shutter: string | null, iso: nu
 }
 
 export const EXPOSURE_COMP = [-2, -5 / 3, -4 / 3, -1, -2 / 3, -1 / 3, 0, 1 / 3, 2 / 3, 1, 4 / 3, 5 / 3, 2]
+
+const FOCALS = [10, 12, 14, 16, 18, 20, 24, 28, 35, 40, 50, 55, 60, 70, 75, 80, 85, 90, 100, 105, 120, 135, 150, 180, 200, 250, 300, 400, 500, 600]
+
+/** Common focal lengths within a zoom's range (empty for primes). */
+export function focalOptions(lens: Lens | null | undefined): number[] {
+  if (!lens || lens.focalMin === lens.focalMax) return []
+  return [...new Set([lens.focalMin, ...FOCALS.filter((f) => f > lens.focalMin && f < lens.focalMax), lens.focalMax])]
+}

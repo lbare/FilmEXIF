@@ -29,12 +29,12 @@ export const filmLabel = (film: Pick<RollFilm, 'brand' | 'name'>) => `${film.bra
 
 export const STATUS_ORDER: RollStatus[] = ['loaded', 'finished', 'developing', 'developed', 'scanned']
 
-export const STATUS_META: Record<RollStatus, { label: string; color: string; dateField: string; action: string }> = {
-  loaded: { label: 'In camera', color: 'green', dateField: 'loadedAt', action: 'Loaded' },
-  finished: { label: 'Finished', color: 'yellow', dateField: 'finishedAt', action: 'Finish roll' },
-  developing: { label: 'Developing', color: 'orange', dateField: 'developingAt', action: 'Send to develop' },
-  developed: { label: 'Developed', color: 'blue', dateField: 'developedAt', action: 'Mark developed' },
-  scanned: { label: 'Scanned', color: 'grape', dateField: 'scannedAt', action: 'Mark scanned' },
+export const STATUS_META: Record<RollStatus, { label: string; short: string; color: string; dateField: string; action: string }> = {
+  loaded: { label: 'In camera', short: 'Loaded', color: 'green', dateField: 'loadedAt', action: 'Loaded' },
+  finished: { label: 'Finished', short: 'Finished', color: 'yellow', dateField: 'finishedAt', action: 'Finish roll' },
+  developing: { label: 'Developing', short: 'At lab', color: 'orange', dateField: 'developingAt', action: 'Send to develop' },
+  developed: { label: 'Developed', short: 'Developed', color: 'blue', dateField: 'developedAt', action: 'Mark developed' },
+  scanned: { label: 'Scanned', short: 'Scanned', color: 'grape', dateField: 'scannedAt', action: 'Mark scanned' },
 }
 
 export const FORMAT_OPTIONS: { value: Format; label: string }[] = [
