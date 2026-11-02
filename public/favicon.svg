@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#1a1b1e"/>
+  <!-- film leader -->
+  <path d="M300 196h120c14 0 24 10 24 24v120c0 14-10 24-24 24H300z" fill="#e8590c"/>
+  <g fill="#1a1b1e">
+    <rect x="320" y="208" width="22" height="16" rx="4"/>
+    <rect x="360" y="208" width="22" height="16" rx="4"/>
+    <rect x="400" y="208" width="22" height="16" rx="4"/>
+    <rect x="320" y="336" width="22" height="16" rx="4"/>
+    <rect x="360" y="336" width="22" height="16" rx="4"/>
+    <rect x="400" y="336" width="22" height="16" rx="4"/>
+  </g>
+  <!-- canister -->
+  <rect x="196" y="104" width="44" height="40" rx="8" fill="#ced4da"/>
+  <rect x="104" y="136" width="228" height="32" rx="12" fill="#ced4da"/>
+  <rect x="116" y="160" width="204" height="240" rx="18" fill="#fd7e14"/>
+  <rect x="116" y="220" width="204" height="120" fill="#ffd43b"/>
+  <rect x="104" y="392" width="228" height="32" rx="12" fill="#ced4da"/>
+</svg>

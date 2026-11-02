@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each user's data lives under users/{uid} and is private to them.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /{collection}/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
+    // Collections from the original version of the app. Signed-in users can
+    // read them once to import their old rolls; nobody can write to them.
+    match /{legacy}/{docId} {
+      allow read: if request.auth != null
+        && legacy in ['activeRolls', 'developedRolls', 'completedRolls'];
+    }
+  }
+}
