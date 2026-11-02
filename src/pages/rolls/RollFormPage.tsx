@@ -51,7 +51,8 @@ export default function RollFormPage() {
 
   const [initial] = useState<Values>(() => {
     if (editing) return { ...stripBase(editing), loadedAt: toPicker(editing.loadedAt), filmSource: editing.filmId ? 'fridge' : 'other' }
-    const film = films.find((f) => f.id === params.get('film')) ?? null
+    const inStock = films.filter((f) => f.stock > 0)
+    const film = films.find((f) => f.id === params.get('film')) ?? (inStock.length === 1 ? inStock[0] : null)
     const camera = cameras.find((c) => !c.retired) ?? null
     const format = film?.format ?? camera?.format ?? '35mm'
     return {
