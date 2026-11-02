@@ -1,0 +1,1 @@
+import{n as e,t}from"./use-mantine-color-scheme-BpQAD5mR.js";function n(n,r={getInitialValueInEffect:!0}){let i=e(n,r),{colorScheme:a}=t();return a===`auto`?i:a}export{n as t};
