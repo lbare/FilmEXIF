@@ -1,97 +1,75 @@
 # FilmEXIF
 
-A mobile-first web app for logging film photography shots as you take them, so the metadata (camera, film, settings, location, date) can later be attached to your scanned negatives.
+A phone-first web app for logging film photography: every roll, every frame, with its exposure settings, location, compass heading and time. It works offline, installs to your home screen, and syncs to your account so the same data is on your desktop.
 
-It's modelled on **Film Shots** by Oleksii Novikov ([35mmc write-up](https://www.35mmc.com/06/08/2020/film-shots-another-film-exif-app-for-android-and-ios-but-with-a-difference-by-oleksii-novikov/)), which is no longer on the app stores. Film Shots logged each frame on your phone, then let you push that data into Lightroom and match it to your scans. FilmEXIF aims to do the same.
+Inspired by **Film Shots** by Oleksii Novikov ([35mmc write-up](https://www.35mmc.com/06/08/2020/film-shots-another-film-exif-app-for-android-and-ios-but-with-a-difference-by-oleksii-novikov/)), which is no longer on the app stores.
 
 Live: https://lbare.github.io/FilmEXIF/
 
-## Goals
+## Features
 
-1. **Track shots** – for every frame: camera, film stock, exposure settings, location, and date/time.
-2. **Track rolls through their lifecycle** – shooting → developing → scanned/completed.
-3. **Export** – get each roll's data out in a portable format (JSON/CSV, and EXIF/XMP-friendly).
-4. **Lightroom linking** – match logged frames to scanned negatives in Lightroom and write the metadata onto them.
+- **Shoot screen:** a big next-frame number, thumb-sized aperture/shutter/focal pickers limited to your gear's real values, and settings that carry over from the last frame, so most frames take one tap. GPS and compass heading are captured automatically. Optional extras: note, reference photo, exposure compensation, flash, filter, and skip frame.
+- **Rolls:** load a roll from the fridge or type in any film, with push/pull, exposures, tags, notes and costs. Each roll tracks Loaded → Finished → At lab → Developed → Scanned, with a date for each step.
+- **Frame editor:** fix any setting or the time, renumber frames, or move the location pin on a map.
+- **Film fridge:** stock counts, expiry warnings, price per roll, and the value of what's in the fridge. Loading a roll takes one out of stock.
+- **Gear:** cameras (shutter range, ⅓ stops, bulb, auto) and lenses (focal range, aperture range and clicks). Retire gear without losing its history.
+- **Map:** every located frame, clustered and filterable by roll, camera, film and date. Each roll also has its own map.
+- **Stats:** frames per month, a shooting-day calendar, films, cameras, lenses, focal lengths, apertures, shutter speeds, time of day, ISO and push/pull, spend and cost per frame, and turnaround times.
+- **Year in review:** a shareable summary of a year on film.
+- **Sleeve labels:** a printable index card or strip with a QR code back to the roll.
+- **Your data:** JSON backup and restore, plus a one-time import of rolls from the original version of this app.
 
-Goals 1 and 2 are partly built. Goals 3 and 4 haven't been started.
+## Tech
 
-## Tech stack
+React 19 · TypeScript 7 · Vite 8 · Mantine 9 (+ charts, dates) · React Router (hash routing for GitHub Pages) · Firebase 13 (Auth, Firestore with offline cache, Storage) · Leaflet + OpenStreetMap · vite-plugin-pwa · Vitest · oxlint
 
-- React 18 + TypeScript, built with Vite
-- Mantine 7 (UI components and forms), Tailwind CSS (layout), Phosphor icons
-- Firebase: Firestore for roll data, Storage for reference photos
-- React Router (`/FilmEXIF` base path) and GitHub Pages hosting (`public/404.html` sends deep links back to the SPA)
-
-## How it works today
-
-### Screens (bottom tab bar — `src/navigation/TabNavigator.tsx`)
-
-| Tab | File | What it does |
-| --- | --- | --- |
-| Library | `src/pages/Library.tsx` | Lists rolls in three sections: **Active**, **Develop**, **Completed** |
-| Add | `src/pages/AddRoll.tsx` | Form for a new roll: optional name, camera, film brand, film name, ISO |
-| Settings | `src/pages/Settings.tsx` | Placeholder |
-
-### Roll lifecycle
-
-- **Active** rolls show a progress ring with the next frame number out of the total exposures.
-  - **Tap +** logs a shot: it grabs the current GPS position (falls back to `0,0` if that fails) and the current time.
-  - **Long-press +** opens `RollOptionsModal`, where you can either take a reference photo with the phone camera (resized to 1024px JPEG and uploaded to Firebase Storage) or **Finish Roll**.
-- **Finish Roll** moves the roll to **Develop**. The ✓ button there moves it to **Completed**.
-- The **Completed** folder button doesn't do anything yet. It's meant to be the place for export and Lightroom linking.
-
-### Data model (`src/interfaces.tsx`)
-
-```ts
-FilmRoll { id, dateCreated, name?, camera, filmBrand, filmName, iso, exposures, photos: Photo[] }
-Photo    { id, location: { latitude, longitude }, date, imageUrl? }
+```
+src/
+  auth/         sign-in and auth state
+  data/         types, Firestore API, DataProvider (live subscription to the user's data), backup, legacy import
+  lib/          exposure maths, stats, sensors (GPS/compass), photos (offline queue), formatting
+  components/   shared UI (layout, pickers, roll cards, frame list)
+  pages/        rolls, shoot, fridge, gear, map, stats, settings
 ```
 
-### Persistence (`src/firebase/config.ts`, `src/contexts/RollsContext.tsx`)
-
-- Each stage is its own Firestore collection: `activeRolls`, `developedRolls`, `completedRolls`. Moving a roll copies the document into the next collection and deletes the old one.
-- Photos are stored as an array on the roll document.
-- `metadata/globalLastUpdated` holds a timestamp. On load, the app compares it with the copy in `localStorage` and either uses the cached rolls or re-fetches everything.
-- There's no authentication, so every visitor reads and writes the same collections.
-
-## Known gaps and issues
-
-**Missing for the core "log a shot" goal**
-- Shots only record location and time. There are no fields for **aperture, shutter speed, lens/focal length, exposure compensation, or notes**, and no screen to view or edit the frames on a roll.
-- `exposures` is always 36 (the form has no field for it), and nothing stops you logging more frames than the roll holds.
-- The ISO list is fixed (100–1600), so push/pull ratings like 3200 or 50 aren't available.
-- Camera and film are free text. There's no saved gear or film presets yet, though the Settings tab could hold them.
-- Rolls can't be edited or deleted from the UI.
-
-**Bugs / tech debt**
-- Firestore document IDs and roll IDs don't match. `addDoc` creates a random document ID, while the app's own UUID is stored in the `id` field. `deleteRollFromFirebase` looks the roll up by `doc(db, …, rollId)`, so it would never find it (it isn't called from anywhere yet). Fix: use `setDoc(doc(db, coll, roll.id), …)` everywhere.
-- After a reference photo uploads, the local state doesn't get its `imageUrl` until the next full reload from Firestore.
-- The long-press handlers are spread onto the same button as the tap handler, so a long press can log a shot *and* open the modal.
-- The "new only" sync path compares a `Date` against ISO-string timestamps. It's never called, so it doesn't break anything today.
-- Splitting stages across three collections makes moves non-atomic. A single `rolls` collection with a `stage` field would be simpler.
-- With no auth and open collections, the data is effectively public. Add Firebase Auth and per-user security rules before relying on it.
-- There are two deploy paths: the `yarn deploy` script (gh-pages) and the GitHub Actions workflow (`.github/workflows/main.yml`). Pick one.
-
-## Roadmap
-
-The app is being rebuilt. The current plan is in [ROADMAP.md](ROADMAP.md). The list below is the original sketch.
-
-1. **Richer shot logging** – per-frame aperture, shutter, lens, focal length, notes. Quick-entry UI that carries the last frame's settings forward. A roll detail view for editing and deleting frames.
-2. **Gear and film presets** – saved cameras, lenses, and film stocks (Settings tab), plus editable exposure count and custom ISO.
-3. **Data fixes** – single collection keyed by roll ID, edit/delete, auth and per-user rules.
-4. **Export** – per-roll JSON and CSV download. Optionally an ExifTool-compatible CSV or `.xmp` sidecars named by frame number, so metadata can be applied to scans outside Lightroom too.
-5. **Lightroom linking** – the original Film Shots approach. A Lightroom Classic plugin (Lua SDK) that:
-   - imports a roll export (file or fetched from Firebase),
-   - matches frames to the selected scans in capture/filename order, with manual adjustment,
-   - writes capture date/time, GPS, camera/lens, ISO, aperture, and shutter. Lightroom's SDK can set some of these fields directly; the rest need custom plugin metadata or an ExifTool pass.
+Data lives under `users/{uid}/{cameras,lenses,films,rolls,frames}` and is private to each user (`firestore.rules`, `storage.rules`). Writes are applied to the local cache immediately and sync when there's a connection. Reference photos are resized on the device, kept in IndexedDB, and uploaded in the background.
 
 ## Development
 
 ```bash
-yarn install
-yarn dev        # local dev server (served under /FilmEXIF/)
-yarn build      # type-check + production build to dist/
-yarn lint
+npm install
+npm run dev          # http://localhost:5173/FilmEXIF/ against the real Firebase project
 ```
 
-Pushing to `main` deploys to GitHub Pages through GitHub Actions.
+To work against local emulators instead (needs Java 21+):
+
+```bash
+npm run emulators    # auth, firestore and storage emulators (uses npx firebase-tools)
+npm run dev:emu      # app pointed at the emulators
+node scripts/seed-emulator.mjs   # optional: a year of sample rolls and frames
+```
+
+Checks (all run in CI on every PR):
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+Pushing to `main` builds the app and publishes `dist/` to the `gh-pages` branch, which GitHub Pages serves.
+
+## Firebase setup (one time)
+
+1. In the [Firebase console](https://console.firebase.google.com/project/filmexif-e38ff/authentication), open **Authentication → Get started**, then enable the **Google** and **Email/Password** providers.
+2. Under **Authentication → Settings → Authorized domains**, add `lbare.github.io`.
+3. Deploy the security rules:
+   ```bash
+   npx firebase-tools deploy --only firestore:rules,storage --project filmexif-e38ff
+   ```
+4. Reference-photo uploads need Cloud Storage, which may require the Blaze plan. Without it, photos stay on the device that took them and everything else still works.
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md). Next up: Lightroom export and linking frames to scans.

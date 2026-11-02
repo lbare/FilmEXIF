@@ -55,6 +55,11 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    // The Firebase SDK alone is ~750 kB; pages, maps and charts are already split out and lazy-loaded,
+    // and the service worker precaches everything after the first visit.
+    chunkSizeWarningLimit: 800,
+  },
   test: {
     include: ['src/**/*.test.ts'],
   },
