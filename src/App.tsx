@@ -1,31 +1,43 @@
-import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import { MantineProvider } from "@mantine/core";
-import { RollsProvider } from "./contexts/RollsContext";
-import TabNavigator from "./navigation/TabNavigator";
-import "@mantine/core/styles.css";
+import { Center, Loader, MantineProvider } from '@mantine/core'
+import { ModalsProvider } from '@mantine/modals'
+import { Notifications } from '@mantine/notifications'
+import { createHashRouter, RouterProvider } from 'react-router'
+import { AuthProvider, useAuth } from './auth/AuthProvider'
+import { SignInPage } from './auth/SignInPage'
+import { DataProvider } from './data/DataProvider'
+import { routes } from './routes'
+import { theme } from './theme'
+import { UpdatePrompt } from './components/UpdatePrompt'
 
-const App: React.FC = () => {
-  useEffect(() => console.log("App mounted"), []);
+const router = createHashRouter(routes)
 
+function AuthGate() {
+  const { user, loading } = useAuth()
+  if (loading) {
+    return (
+      <Center h="100dvh">
+        <Loader />
+      </Center>
+    )
+  }
+  if (!user) return <SignInPage />
   return (
-    <MantineProvider defaultColorScheme="dark">
-      <RollsProvider>
-        <Router basename="/FilmEXIF">
-          <Routes>
-            <Route path="/" element={<Navigate to="/tabs/library" replace />} />
-            <Route path="/tabs/:tabValue" element={<TabNavigator />} />
-            <Route path="*" element={<Navigate to="/tabs/library" replace />} />
-          </Routes>
-        </Router>
-      </RollsProvider>
-    </MantineProvider>
-  );
-};
+    <DataProvider key={user.uid} uid={user.uid}>
+      <RouterProvider router={router} />
+    </DataProvider>
+  )
+}
 
-export default App;
+export default function App() {
+  return (
+    <MantineProvider theme={theme} defaultColorScheme="dark">
+      <Notifications position="top-center" zIndex={1000} />
+      <ModalsProvider>
+        <AuthProvider>
+          <AuthGate />
+        </AuthProvider>
+      </ModalsProvider>
+      <UpdatePrompt />
+    </MantineProvider>
+  )
+}

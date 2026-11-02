@@ -1,0 +1,49 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Keep numbers from jumping around in counters and tables. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Horizontal pickers: hide the scrollbar but keep scrolling. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.leaflet-container {
+  font: inherit;
+  background: var(--mantine-color-body);
+}
+
+[data-mantine-color-scheme='dark'] .leaflet-popup-content-wrapper,
+[data-mantine-color-scheme='dark'] .leaflet-popup-tip {
+  background: var(--mantine-color-dark-6);
+  color: var(--mantine-color-text);
+}
+
+[data-mantine-color-scheme='dark'] .leaflet-control-zoom a,
+[data-mantine-color-scheme='dark'] .leaflet-bar a {
+  background: var(--mantine-color-dark-6);
+  color: var(--mantine-color-text);
+  border-color: var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme='dark'] .leaflet-control-attribution {
+  background: rgba(26, 27, 30, 0.7);
+  color: var(--mantine-color-dark-2);
+}
+[data-mantine-color-scheme='dark'] .leaflet-control-attribution a {
+  color: var(--mantine-color-dark-1);
+}
